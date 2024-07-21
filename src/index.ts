@@ -6,6 +6,8 @@ import { calculateLandingPerformance } from "./landing";
 import { createForm } from "./form";
 import { getAircraftData, getAirportData } from "./utils";
 
+import "../public/style.css";
+
 function clearValidOptions(select: HTMLSelectElement) {
     for (let index = select.length - 1; index >= 0; index--) {
         if (select.options[index].value) {
