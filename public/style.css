@@ -1,0 +1,39 @@
+.row {
+    margin: 1em;
+    padding-left: 2em;
+    padding-right: 1em;
+    padding-bottom: 2em;
+    border-style: solid;
+}
+
+.column {
+    float: left;
+    width: 50%;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+select {
+    width: 100%;
+}
+
+.required::after {
+    content: "*";
+    color: crimson;
+}
+
+.good {
+    color: seagreen;
+}
+
+.error {
+    color: darkorange;
+}
+
+.bad {
+    color: crimson;
+}

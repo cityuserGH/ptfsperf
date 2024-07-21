@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content=""
+            width="device-width,"
+            initial-scale="1.0"
+        />
+        <meta http-equiv="" X-UA-Compatible content="ie=edge" />
+        <title>PTFS Performance Calculator</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <h1>PTFS Performance Calculator</h1>
+        <div class="row">
+            <div class="column">
+                <h2>Takeoff</h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="required">Aircraft:</td>
+                            <td>
+                                <select name="aircraft" id="aircraft-select">
+                                    <option value="">
+                                        -- Select Aircraft --
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="required">Airport:</td>
+                            <td>
+                                <select name="airport" id="airport-select">
+                                    <option value="">
+                                        -- Select Airport --
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="required">Runway:</td>
+                            <td>
+                                <select
+                                    disabled
+                                    name="runway"
+                                    id="runway-select"
+                                >
+                                    <option value="">
+                                        -- Select Runway --
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Intersection:</td>
+                            <td>
+                                <select
+                                    disabled
+                                    name="intersection"
+                                    id="intersection-select"
+                                >
+                                    <option value="">
+                                        -- Select Intersection --
+                                    </option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Flaps:</td>
+                            <td>
+                                <select disabled name="flaps" id="flaps-select">
+                                    <option value="">-- Select Flaps --</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <button disabled id="calculate-button">
+                                    Calculate!
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>Results: <span id="results-span"></span></p>
+                <p>Thrust setting: <span id="thrust">???</span> %</p>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>V<sub>1</sub></td>
+                            <td id="v1">???</td>
+                            <td>kts</td>
+                        </tr>
+                        <tr>
+                            <td>V<sub>R</sub></td>
+                            <td id="vr">???</td>
+                            <td>kts</td>
+                        </tr>
+                        <tr>
+                            <td>V<sub>2</sub></td>
+                            <td id="v2">???</td>
+                            <td>kts</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="column">
+                <h2>Landing</h2>
+                <div id="ldg-form"></div>
+
+                <p>Results: <span id="ldg-results"></span></p>
+
+                <div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Actual landing distance:</td>
+                                <td id="ald">???</td>
+                                <td>ft</td>
+                            </tr>
+                            <tr>
+                                <td>Landing distance required (LDR):</td>
+                                <td id="ldr">???</td>
+                                <td>ft</td>
+                            </tr>
+                            <tr>
+                                <td>Landing distance available (LDA):</td>
+                                <td id="lda">???</td>
+                                <td>ft</td>
+                            </tr>
+                            <tr>
+                                <td>Margin:</td>
+                                <td id="ldg-margin">???</td>
+                                <td>ft</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <br />
+                <div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>V<sub>REF</sub></td>
+                                <td id="vref">???</td>
+                                <td>kts</td>
+                            </tr>
+                            <tr>
+                                <td>V<sub>APP</sub></td>
+                                <td id="vapp">???</td>
+                                <td>kts</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>Thrust setting: <span id="ldg-thrust">???</span> %</p>
+            </div>
+        </div>
+
+        <script src="../dist/bundle.js"></script>
+    </body>
+</html>
