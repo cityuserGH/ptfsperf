@@ -116,6 +116,108 @@ const aircraftData: AircraftData[] = [
             quadratic: 471,
         },
     },
+    {
+        type: "Boeing 737",
+        flaps: [
+            {
+                setting: 1,
+                reduction: 4,
+            },
+            {
+                setting: 2,
+                reduction: 9,
+            },
+            {
+                setting: 3,
+                reduction: 13,
+            },
+            {
+                setting: 4,
+                reduction: 18,
+            },
+            {
+                setting: 5,
+                reduction: 22,
+            },
+        ],
+        speeds: {
+            rotate: 152,
+            landing: 149,
+            stall: 110,
+            max: 454,
+        },
+        decleration: [
+            {
+                value: "no-rev",
+                name: "No reversers",
+                rate: 6.29,
+            },
+            {
+                value: "idle-rev",
+                name: "Idle reversers",
+                rate: 6.73,
+            },
+            {
+                value: "max-rev",
+                name: "Max reversers",
+                rate: 11.2,
+            },
+        ],
+        accelerationData: {
+            base: 4.36,
+            slope: 5.6,
+        },
+        speedData: {
+            base: -6.65,
+            linear: 92.5,
+            quadratic: 374,
+        },
+    },
+    {
+        type: "Boeing 777",
+        flaps: [
+            {
+                setting: 1,
+                reduction: 12,
+            },
+            {
+                setting: 2,
+                reduction: 24,
+            },
+        ],
+        speeds: {
+            rotate: 162,
+            landing: 159,
+            stall: 120,
+            max: 518,
+        },
+        decleration: [
+            {
+                value: "no-rev",
+                name: "No reversers",
+                rate: 5.99,
+            },
+            {
+                value: "idle-rev",
+                name: "Idle reversers",
+                rate: 6.38,
+            },
+            {
+                value: "max-rev",
+                name: "Max reversers",
+                rate: 10.6,
+            },
+        ],
+        accelerationData: {
+            base: 4.16,
+            slope: 5.34,
+        },
+        speedData: {
+            base: -8.26,
+            linear: 110,
+            quadratic: 424,
+        },
+    },
 ];
 
 export { aircraftData };
