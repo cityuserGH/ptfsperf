@@ -37,3 +37,7 @@ select {
 .bad {
     color: crimson;
 }
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
