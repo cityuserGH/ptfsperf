@@ -21,12 +21,14 @@ const questionBank = {
         question: "Airport",
         required: true,
         default: "-- Select Airport --",
-        options: airportData.map((apt) => {
-            return {
-                text: apt.name + " (" + apt.icao + ")",
-                value: apt.icao,
-            };
-        }),
+        options: airportData
+            .sort((a, b) => (a.name > b.name ? 1 : -1))
+            .map((apt) => {
+                return {
+                    text: apt.name + " (" + apt.icao + ")",
+                    value: apt.icao,
+                };
+            }),
     },
     flaps: {
         id: 3,
@@ -40,18 +42,20 @@ const questionBank = {
             const maxFlaps = Math.max(
                 ...acft.flaps.map((flap) => flap.setting)
             ).toString();
-            const flaps = acft?.flaps.map((flaps) => {
-                const name = flaps.name;
-                const setting = flaps.setting.toString();
-                const configuration = setting + "/" + maxFlaps;
+            const flaps = acft?.flaps
+                .sort((a, b) => (a.setting > b.setting ? 1 : -1))
+                .map((flaps) => {
+                    const name = flaps.name;
+                    const setting = flaps.setting.toString();
+                    const configuration = setting + "/" + maxFlaps;
 
-                return {
-                    text: name
-                        ? name + " (" + configuration + ")"
-                        : "Flaps " + configuration,
-                    value: setting,
-                };
-            });
+                    return {
+                        text: name
+                            ? name + " (" + configuration + ")"
+                            : "Flaps " + configuration,
+                        value: setting,
+                    };
+                });
 
             return flaps;
         },
@@ -133,12 +137,14 @@ const takeoffFormInfo: FormInformation = {
             dependsOn: [1],
             optionCallback: ([icao]: string[]) => {
                 const airport = getAirportData(icao);
-                const runways = airport?.runways.map((rwy) => {
-                    return {
-                        text: "RWY " + rwy.name + " (" + rwy.tora + " ft)",
-                        value: rwy.name,
-                    };
-                });
+                const runways = airport?.runways
+                    .sort((a, b) => (a.heading > b.heading ? 1 : -1))
+                    .map((rwy) => {
+                        return {
+                            text: "RWY " + rwy.name + " (" + rwy.tora + " ft)",
+                            value: rwy.name,
+                        };
+                    });
                 if (!runways) return [];
                 return runways;
             },
@@ -153,7 +159,9 @@ const takeoffFormInfo: FormInformation = {
                     .find((airport) => airport.icao === icao)
                     ?.runways.find((runway) => runway.name === rwy);
                 if (runway) {
-                    const intersections = runway?.intersections;
+                    const intersections = runway?.intersections.sort((a, b) =>
+                        a.shift > b.shift ? 1 : -1
+                    );
                     return intersections?.map((intersection) => {
                         return {
                             text:
@@ -257,12 +265,14 @@ const landingFormInfo: FormInformation = {
             dependsOn: [1],
             optionCallback: ([icao]: string[]) => {
                 const airport = getAirportData(icao);
-                const runways = airport?.runways.map((rwy) => {
-                    return {
-                        text: "RWY " + rwy.name + " (" + rwy.lda + " ft)",
-                        value: rwy.name,
-                    };
-                });
+                const runways = airport?.runways
+                    .sort((a, b) => (a.heading > b.heading ? 1 : -1))
+                    .map((rwy) => {
+                        return {
+                            text: "RWY " + rwy.name + " (" + rwy.lda + " ft)",
+                            value: rwy.name,
+                        };
+                    });
                 if (!runways) return [];
                 return runways;
             },
@@ -275,12 +285,14 @@ const landingFormInfo: FormInformation = {
             dependsOn: [0],
             optionCallback: ([type]: string[]) => {
                 const acft = getAircraftData(type);
-                const decels = acft?.decleration.map((decel) => {
-                    return {
-                        text: decel.name,
-                        value: decel.value,
-                    };
-                });
+                const decels = acft?.decleration
+                    .sort((a, b) => (a.rate > b.rate ? 1 : -1))
+                    .map((decel) => {
+                        return {
+                            text: decel.name,
+                            value: decel.value,
+                        };
+                    });
                 if (!decels) return [];
                 return decels;
             },
