@@ -2,7 +2,7 @@ import { AircraftData } from "../types";
 
 const aircraftData: AircraftData[] = [
     {
-        type: "A320",
+        type: "Airbus A320",
         flaps: [
             {
                 setting: 1,
@@ -17,6 +17,7 @@ const aircraftData: AircraftData[] = [
                 reduction: 17,
             },
             {
+                name: "Flaps FULL",
                 setting: 4,
                 reduction: 22,
             },
@@ -43,13 +44,14 @@ const aircraftData: AircraftData[] = [
         },
     },
     {
-        type: "A330",
+        type: "Airbus A330",
         flaps: [
             {
                 setting: 1,
                 reduction: 11,
             },
             {
+                name: "Flaps FULL",
                 setting: 2,
                 reduction: 22,
             },
@@ -76,12 +78,12 @@ const aircraftData: AircraftData[] = [
         },
     },
     {
-        type: "A380",
+        type: "Airbus A380",
         flaps: [
             { setting: 1, reduction: 6 },
             { setting: 2, reduction: 11 },
             { setting: 3, reduction: 18 },
-            { setting: 4, reduction: 22 },
+            { name: "Flaps FULL", setting: 4, reduction: 22 },
         ],
         speeds: {
             rotate: 170,
