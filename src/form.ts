@@ -1,18 +1,4 @@
-type FormInformation = {
-    submitText: string;
-    callback: (answers: { [id: number]: string }) => void;
-    questions: FormQuestion[];
-};
-
-type FormQuestion = {
-    id: number;
-    question: string;
-    required: boolean;
-    default: string;
-    dependsOn?: number;
-    options?: { value: string; text: string }[];
-    optionCallback?: (value: string) => { value: string; text: string }[];
-};
+import { FormQuestion, FormInformation } from "./types";
 
 const values: { [form: string]: { [id: number]: string } } = {};
 
@@ -88,23 +74,26 @@ function mapToRow(formName: string, questionData: FormQuestion) {
 
     if (questionData.dependsOn !== undefined) {
         select.disabled = true;
-        eventHandler.subscribe(
-            formName,
-            questionData.dependsOn,
-            (value: string) => {
+        questionData.dependsOn.forEach((dependency) => {
+            eventHandler.subscribe(formName, dependency, () => {
                 // remove options
                 clearValidOptions();
 
                 // load and add options
-                const optionsData = questionData.optionCallback?.(value);
-                if (optionsData?.length) {
-                    select.disabled = false;
-                    addOptions(optionsData);
-                } else {
-                    select.disabled = true;
+                const data = questionData.dependsOn?.map(
+                    (index) => values[formName][index]
+                );
+                if (data) {
+                    const optionsData = questionData.optionCallback?.(data);
+                    if (optionsData?.length) {
+                        select.disabled = false;
+                        addOptions(optionsData);
+                    } else {
+                        select.disabled = true;
+                    }
                 }
-            }
-        );
+            });
+        });
     } else {
         const options = questionData.options;
         if (options) {

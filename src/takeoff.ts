@@ -102,12 +102,10 @@ function calculateTakeoffPerformanceData(
     return {
         canLiftoff: canLiftoff,
         canAccelStop: canAccStop,
-        data: {
-            thrust: thrust,
-            v1: V_1,
-            vr: V_R,
-            v2: V_2,
-        },
+        thrust: thrust,
+        v1: V_1,
+        vr: V_R,
+        v2: V_2,
     };
 }
 

@@ -17,76 +17,13 @@
         <div class="row">
             <div class="column">
                 <h2>Takeoff</h2>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td class="required">Aircraft:</td>
-                            <td>
-                                <select name="aircraft" id="aircraft-select">
-                                    <option value="">
-                                        -- Select Aircraft --
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="required">Airport:</td>
-                            <td>
-                                <select name="airport" id="airport-select">
-                                    <option value="">
-                                        -- Select Airport --
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="required">Runway:</td>
-                            <td>
-                                <select
-                                    disabled
-                                    name="runway"
-                                    id="runway-select"
-                                >
-                                    <option value="">
-                                        -- Select Runway --
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Intersection:</td>
-                            <td>
-                                <select
-                                    disabled
-                                    name="intersection"
-                                    id="intersection-select"
-                                >
-                                    <option value="">
-                                        -- Select Intersection --
-                                    </option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Flaps:</td>
-                            <td>
-                                <select disabled name="flaps" id="flaps-select">
-                                    <option value="">-- Select Flaps --</option>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>
-                                <button disabled id="calculate-button">
-                                    Calculate!
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <p>Results: <span id="results-span"></span></p>
-                <p>Thrust setting: <span id="thrust">???</span> %</p>
+                <div id="to-form"></div>
+
+                <p>Results: <span id="to-results"></span></p>
+                <p>
+                    Thrust setting:
+                    <span id="to-thrust">???</span> %
+                </p>
                 <table>
                     <tbody>
                         <tr>
@@ -157,7 +94,10 @@
                     </table>
                 </div>
 
-                <p>Thrust setting: <span id="ldg-thrust">???</span> %</p>
+                <p>
+                    Thrust setting for V<sub>APP</sub>:
+                    <span id="ldg-thrust">???</span> %
+                </p>
             </div>
         </div>
     </body>
