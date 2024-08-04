@@ -41,3 +41,20 @@ select {
 body {
     font-family: Arial, Helvetica, sans-serif;
 }
+
+.header-image {
+    height: 75px;
+    width: auto;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    column-gap: 1em;
+    margin: 1em;
+}
+
+.header-text {
+    font-size: 50px;
+    font-weight: bold;
+}
