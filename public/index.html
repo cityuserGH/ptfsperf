@@ -115,39 +115,61 @@
                     do not require the entire runway to take off. Instead, you
                     can use a lower thrust setting. Alternatively, you can
                     depart from a holding point that is closer to your gate.
+                    When landing, you probably don't need to use reverse thrust
+                    at all. The PTFS Performance Calculator allows you to you
+                    make sure that you have enough distance to land safely.
                 </p>
                 <p>
                     <b>What do the takeoff numbers mean?</b>
                     <br />
                     For takeoff, the calculation gives you four values. The
-                    thrust setting is the minimum amount of thrust required to
-                    depart safely. V<sub>1</sub> is the speed at which there is
-                    no longer enough runway left to take off. V<sub>R</sub> is
-                    the speed at which you should rotate the aircraft. In PTFS,
-                    you will leave the ground at this speed. Finally, V<sub
-                        >2</sub
-                    >
-                    is the speed which must be obtained by the end of the runway
-                    (at a height of 35 ft) in order to climb during an engine
-                    failure. In this calculator, it is assumed to be V<sub
-                        >R</sub
-                    >
-                    + 4.
+                    thrust setting is the amount of thrust required to depart
+                    safely. V<sub>1</sub> is the highest speed at which you can
+                    reject the takeoff. V<sub>R</sub> is the speed at which you
+                    should rotate the aircraft. In PTFS, you will leave the
+                    ground at this speed. Finally, V<sub>2</sub> is the speed
+                    which must be obtained by the end of the runway (at a height
+                    of 35 ft) in order to climb during an engine failure. In
+                    this calculator, it is assumed to be V<sub>R</sub>
+                    + 4 kts.
                 </p>
                 <p>
                     <b>What do the landing numbers mean?</b>
                     <br />
                     For landing, the calculation gives you the actual landing
-                    distance that you need, the LDR (which includes a safety
-                    margin), and the LDA for the runway you selected. The margin
-                    is simply the LDA minus the LDR. V<sub>REF</sub> is the
+                    distance that you need to stop the aircraft (including a
+                    7-second flare), the landing distance required (LDR, which
+                    includes a 15% safety margin), and the landing distance
+                    available (LDA) for the runway you selected. The margin is
+                    simply the LDA minus the LDR. V<sub>REF</sub> is the
                     reference speed, which is the speed you should aim for on
-                    touchdown. Your aircraft should never be below this speed
-                    during final approach. In this calculator it is 23% above
-                    your stall speed. aircraft. V<sub>APP</sub> is the approach
-                    speed, which should be flown on final approach. In reality,
-                    this depends on wind, but in this calculator it is simply
-                    V<sub>REF</sub> + 5.
+                    touchdown. The calculator assumes that you pass the runway
+                    treshold at this speed. Your aircraft should never be below
+                    this speed during final approach. In this calculator V<sub
+                        >REF</sub
+                    >
+                    is 23% above your stall speed. aircraft. V<sub>APP</sub> is
+                    the approach speed, which should be flown on final approach.
+                    In reality, this depends on the headwind and other factors,
+                    but in this calculator it is simply V<sub>REF</sub> + 5.
+                </p>
+                <p>
+                    <b>Is the source code available?</b>
+                    <br />
+                    The source code can be found on GitHub via
+                    <a href="https://github.com/cityuserGH/ptfsperf"
+                        >this link</a
+                    >
+                    and is released under an MIT license.
+                </p>
+                <p>
+                    <b>Help! I found a bug!</b>
+                    <br />
+                    You can
+                    <a href="https://github.com/cityuserGh/ptfsperf/issues/new"
+                        >submit an issue</a
+                    >
+                    on the GitHub page or contact me @cityuser on Discord.
                 </p>
             </div>
         </div>
