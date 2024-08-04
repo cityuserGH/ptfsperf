@@ -12,21 +12,6 @@ import {
     getRunwayData,
 } from "./utils";
 
-function calculateActualLandingDistanceVapp(Vapp: number, decelRate: number) {
-    const Vapp_fps = Vapp * KTS_TO_FPS;
-    const decel_fps = decelRate * KTS_TO_FPS;
-
-    const flareSpeed_fps = 0.98 * Vapp_fps;
-    const flareLength = flareSpeed_fps * FLARE_DURATION;
-
-    const touchdownSpeed_fps = 0.96 * Vapp_fps;
-    const rolloutLength =
-        (touchdownSpeed_fps * touchdownSpeed_fps) / (decel_fps * 2);
-
-    const actualLength = flareLength + rolloutLength;
-    return Math.ceil(actualLength);
-}
-
 function calculateActualLandingDistance(Vref: number, decelRate: number) {
     const Vref_fps = Vref * KTS_TO_FPS;
     const decel_fps = decelRate * KTS_TO_FPS;
