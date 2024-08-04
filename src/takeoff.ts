@@ -41,7 +41,7 @@ function calculateV1(
             )) /
             Math.sqrt(accRate * decelRate) -
             2) /
-        (1 / accRate + 1 / decelRate);
+        (1.0 / accRate + 1.0 / decelRate);
 
     const calc_V1_kts = Math.floor(calc_V1_fps * FPS_TO_KTS);
 
@@ -87,6 +87,8 @@ function calculateTakeoffPerformanceData(
     let thrust = minimumThrust - 1;
     while (thrust < 100 && (!canAccStop || !canLiftoff)) {
         thrust++;
+
+        // in feet/second^2
         const accRate = getAccelerationRate(
             aircraftData.accelerationData,
             thrust
