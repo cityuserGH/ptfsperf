@@ -5,7 +5,7 @@ import { airportData } from "./data/airports";
 
 // Get the acceleration rate (f/s^2) at a certain thrust (0-100)
 function getAccelerationRate(accData: LinearData, thrust: number) {
-    return accData.slope * (thrust * 0.01) * KTS_TO_FPS + accData.base;
+    return KTS_TO_FPS * (accData.slope * (thrust * 0.01) + accData.base);
 }
 
 // Get the speed (kts) at a certain thrust level
@@ -46,10 +46,16 @@ function getRunwayData(airport: AirportData, runway: string) {
     return airport.runways.find((rwy) => rwy.name === runway);
 }
 
+/**
+ * Get deceleration rate in feet/second^2
+ */
 function getDecelerationRate(aircraftData: AircraftData, id: string) {
-    return aircraftData.decleration.find(
+    const decelRate_kts = aircraftData.decleration.find(
         (decel) => decel.value === (id || "no-rev")
     )?.rate;
+    if (decelRate_kts) {
+        return KTS_TO_FPS * decelRate_kts;
+    }
 }
 
 export {
