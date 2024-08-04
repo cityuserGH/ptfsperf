@@ -12,7 +12,7 @@ import {
     getRunwayData,
 } from "./utils";
 
-function calculateActualLandingDistance(Vapp: number, decelRate: number) {
+function calculateActualLandingDistanceVapp(Vapp: number, decelRate: number) {
     const Vapp_fps = Vapp * KTS_TO_FPS;
     const decel_fps = decelRate * KTS_TO_FPS;
 
@@ -27,6 +27,18 @@ function calculateActualLandingDistance(Vapp: number, decelRate: number) {
     return Math.ceil(actualLength);
 }
 
+function calculateActualLandingDistance(Vref: number, decelRate: number) {
+    const Vref_fps = Vref * KTS_TO_FPS;
+    const decel_fps = decelRate * KTS_TO_FPS;
+
+    const flareLength = Vref_fps * FLARE_DURATION;
+
+    const rolloutLength = (Vref_fps * Vref_fps) / (decel_fps * 2);
+
+    const actualLength = flareLength + rolloutLength;
+    return Math.ceil(actualLength);
+}
+
 // v_ref = 1.3 stall speed in configuration
 function calculateLandingPerformanceData(
     lda: number,
@@ -34,9 +46,9 @@ function calculateLandingPerformanceData(
     flapReduction: number,
     decelerationRate: number
 ) {
-    const Vref = Math.ceil((stallSpeed - flapReduction) * 1.3);
+    const Vref = Math.ceil((stallSpeed - flapReduction) * 1.23);
     const Vapp = Vref + 5;
-    const actualLength = calculateActualLandingDistance(Vapp, decelerationRate);
+    const actualLength = calculateActualLandingDistance(Vref, decelerationRate);
     const ald = Math.ceil(actualLength);
     const ldr = Math.ceil(actualLength * LDGDIST_SAFETY_MARGIN);
     const margin = lda - ldr;
