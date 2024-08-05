@@ -42,15 +42,25 @@ function calculateV1(
         const accelerateDistance = (V1_fps * V1_fps) / (2 * accRate);
 
         // distance required to "switcheroo" from takeoff thrust to idle thrust
-        const timeToDecreaseThrust = thrust * SECONDS_PER_THRUST_SETTING; // assume we go from accRate to decelRate linearly
+
+        // assume we go from accRate to decelRate linearly
+        const timeToDecreaseThrust = thrust * SECONDS_PER_THRUST_SETTING;
+        // the speed of the aircraft once we are applying decelRate
         const speedAtIdleThrust_fps =
-            V1_fps + (timeToDecreaseThrust * (accRate + decelRate)) / 2; // the speed of the aircraft once we are applying decelRate
+            V1_fps + (timeToDecreaseThrust * (accRate + decelRate)) / 2;
+
+        // integral of quadratic function
+        // from V1 (at t=0, slope accRate)
+        // to speedAtIdleThrust (t=timeToDecreaseThrust, slope decelRate)
         const switcherooDistance =
             V1_fps * timeToDecreaseThrust +
-            ((speedAtIdleThrust_fps - V1_fps) * timeToDecreaseThrust) / 2;
+            (timeToDecreaseThrust *
+                (2 * speedAtIdleThrust_fps + accRate * timeToDecreaseThrust)) /
+                6;
 
         // distance to stop while at idle thrust
-        const decelerateDistance = (V1_fps * V1_fps) / (2 * decelRate);
+        const decelerateDistance =
+            (speedAtIdleThrust_fps * speedAtIdleThrust_fps) / (2 * decelRate);
 
         // safety/decision margin, 2 seconds at V1
         const decisionDistance = 2 * V1_fps;
