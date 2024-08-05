@@ -5,6 +5,7 @@ import {
     FPS_TO_KTS,
     TORA_SAFETY_MARGIN,
     CLIMBOUT_SPEED_LOSS,
+    ROTATE_DURATION,
 } from "./data/values";
 
 import {
@@ -13,6 +14,7 @@ import {
     getAirportData,
     getDecelerationRate,
     getFlapReduction,
+    getMaxSpeed,
     getMinimumThrust,
     getRunwayData,
 } from "./utils";
@@ -55,10 +57,24 @@ function calculateV1(
     return actual_V1_kts;
 }
 
-function calculateLiftoffDistance(V2_kts: number, accRate: number) {
-    const V2_fps = V2_kts * KTS_TO_FPS;
-    const liftoffDistance = (V2_fps * V2_fps) / (accRate * 2);
-    return liftoffDistance * TORA_SAFETY_MARGIN;
+function calculateLiftoffDistance(
+    VR_kts: number,
+    accRate: number,
+    thrustMax_kts: number
+) {
+    const VR_fps = VR_kts * KTS_TO_FPS;
+    const thrustMax_fps = thrustMax_kts * KTS_TO_FPS;
+    const accelerateDistance = (VR_fps * VR_fps) / (accRate * 2);
+
+    const speedAfterRotation = Math.min(
+        thrustMax_fps,
+        VR_fps + accRate * ROTATE_DURATION
+    );
+
+    const rotateDistance = 5 * VR_fps + (5 * (speedAfterRotation - VR_fps)) / 2;
+    const takeoffDistance = accelerateDistance + rotateDistance;
+    const requiredDistance = takeoffDistance * TORA_SAFETY_MARGIN;
+    return requiredDistance;
 }
 
 function calculateTakeoffPerformanceData(
@@ -97,7 +113,9 @@ function calculateTakeoffPerformanceData(
         if (decelRate) {
             V_1 = calculateV1(V_R, accRate, decelRate, asda);
             canAccStop = !(V_1 === -1);
-            canLiftoff = tora > calculateLiftoffDistance(V_2, accRate);
+            const maxSpeed = getMaxSpeed(aircraftData.speedData, thrust);
+            canLiftoff =
+                tora > calculateLiftoffDistance(V_2, accRate, maxSpeed);
         }
     }
 
