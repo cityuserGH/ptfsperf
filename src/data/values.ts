@@ -6,6 +6,7 @@ const REALISM_PRETEND_FACTOR = 1; //0.563; // show user false runway lengths
 const FLARE_DURATION = 7; // how many seconds the flare should be calculated as
 const LDGDIST_SAFETY_MARGIN = 1.15;
 const UNKNOWN_VALUE = "???";
+const VREF_FACTOR = 1.3; // stall speed times this is vref
 
 export {
     KTS_TO_FPS,
@@ -15,4 +16,5 @@ export {
     REALISM_PRETEND_FACTOR,
     FLARE_DURATION,
     LDGDIST_SAFETY_MARGIN,
+    VREF_FACTOR,
 };
