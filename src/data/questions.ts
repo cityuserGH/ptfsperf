@@ -34,7 +34,7 @@ const questionBank = {
         id: 3,
         question: "Flaps",
         required: false,
-        default: "-- Select Flaps --",
+        default: "No flaps",
         dependsOn: [0],
         optionCallback: ([type]: string[]) => {
             const acft = getAircraftData(type);
@@ -152,7 +152,7 @@ const takeoffFormInfo: FormInformation = {
         {
             question: "Intersection",
             required: false,
-            default: "-- Select Intersection --",
+            default: "Full length",
             dependsOn: [1, 2],
             optionCallback: ([icao, rwy]: string[]) => {
                 const runway = airportData

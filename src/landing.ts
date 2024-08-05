@@ -2,6 +2,7 @@ import {
     KTS_TO_FPS,
     FLARE_DURATION,
     LDGDIST_SAFETY_MARGIN,
+    VREF_FACTOR,
 } from "./data/values";
 import {
     getAircraftData,
@@ -31,7 +32,7 @@ function calculateLandingPerformanceData(
     flapReduction: number,
     decelerationRate: number
 ) {
-    const Vref = Math.ceil((stallSpeed - flapReduction) * 1.23);
+    const Vref = Math.ceil((stallSpeed - flapReduction) * VREF_FACTOR);
     const Vapp = Vref + 5;
     const actualLength = calculateActualLandingDistance(Vref, decelerationRate);
     const ald = Math.ceil(actualLength);

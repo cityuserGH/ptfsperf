@@ -127,10 +127,6 @@ const airportData: AirportData[] = [
                 asda: 8292,
                 intersections: [
                     {
-                        name: "Full length",
-                        shift: 0,
-                    },
-                    {
                         name: "E1",
                         shift: 766,
                     },
@@ -200,10 +196,6 @@ const airportData: AirportData[] = [
                 tora: 5875,
                 asda: 5986,
                 intersections: [
-                    {
-                        name: "Full length",
-                        shift: 0,
-                    },
                     {
                         name: "B",
                         shift: 300,
@@ -286,10 +278,6 @@ const airportData: AirportData[] = [
                 tora: 6508,
                 asda: 6682,
                 intersections: [
-                    {
-                        name: "Full length",
-                        shift: 0,
-                    },
                     {
                         name: "D1",
                         shift: 248,
@@ -428,10 +416,6 @@ const airportData: AirportData[] = [
                 asda: 4290,
                 intersections: [
                     {
-                        name: "Full length",
-                        shift: 0,
-                    },
-                    {
                         name: "A1",
                         shift: 430,
                     },
@@ -448,10 +432,6 @@ const airportData: AirportData[] = [
                 tora: 4290,
                 asda: 4382,
                 intersections: [
-                    {
-                        name: "Full length",
-                        shift: 0,
-                    },
                     {
                         name: "A2",
                         shift: 1879,
@@ -471,10 +451,6 @@ const airportData: AirportData[] = [
                 tora: 2612,
                 asda: 2612,
                 intersections: [
-                    {
-                        name: "Full length",
-                        shift: 0,
-                    },
                     {
                         name: "C",
                         shift: 1228,
@@ -515,10 +491,6 @@ const airportData: AirportData[] = [
                 tora: 2157,
                 asda: 2157,
                 intersections: [
-                    {
-                        name: "Full length",
-                        shift: 0,
-                    },
                     {
                         name: "A",
                         shift: 86,
@@ -672,10 +644,6 @@ const airportData: AirportData[] = [
                 asda: 5984,
                 intersections: [
                     {
-                        name: "Full length",
-                        shift: 0,
-                    },
-                    {
                         name: "B1",
                         shift: 209,
                     },
@@ -686,6 +654,170 @@ const airportData: AirportData[] = [
                     {
                         name: "E2",
                         shift: 3680,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        name: "Al Najaf",
+        icao: "IJAF",
+        runways: [
+            {
+                name: "07",
+                heading: 71,
+                lda: 3884,
+                tora: 3884,
+                asda: 3884,
+                intersections: [],
+            },
+            {
+                name: "25",
+                heading: 251,
+                lda: 3884,
+                tora: 3884,
+                asda: 3884,
+                intersections: [],
+            },
+        ],
+    },
+    {
+        name: "Paphos",
+        icao: "IPAP",
+        runways: [
+            {
+                name: "17",
+                heading: 174,
+                lda: 5802,
+                tora: 5802,
+                asda: 5960,
+                intersections: [
+                    {
+                        name: "C4",
+                        shift: 0,
+                    },
+                    {
+                        name: "C3",
+                        shift: 1025,
+                    },
+                    {
+                        name: "B2",
+                        shift: 1494,
+                    },
+                    {
+                        name: "B1/C2",
+                        shift: 2893,
+                    },
+                ],
+            },
+            {
+                name: "35",
+                heading: 354,
+                lda: 5802,
+                tora: 5802,
+                asda: 5956,
+                intersections: [
+                    {
+                        name: "C1",
+                        shift: 0,
+                    },
+                    {
+                        name: "B1/C2",
+                        shift: 2909,
+                    },
+                    {
+                        name: "B2",
+                        shift: 4309,
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        name: "McConnell AFB",
+        icao: "IIAB",
+        runways: [
+            {
+                name: "27L",
+                heading: 275,
+                lda: 7371,
+                tora: 7371,
+                asda: 8048,
+                intersections: [
+                    {
+                        name: "L2",
+                        shift: 0,
+                    },
+                    {
+                        name: "J2",
+                        shift: 2384,
+                    },
+                    {
+                        name: "I2",
+                        shift: 4947,
+                    },
+                ],
+            },
+            {
+                name: "09R",
+                heading: 95,
+                lda: 7371,
+                tora: 7371,
+                asda: 8039,
+                intersections: [
+                    {
+                        name: "D2",
+                        shift: 0,
+                    },
+                    {
+                        name: "I2",
+                        shift: 2424,
+                    },
+                    {
+                        name: "J2",
+                        shift: 4988,
+                    },
+                ],
+            },
+            {
+                name: "09L",
+                heading: 95,
+                lda: 7346,
+                tora: 7346,
+                asda: 8016,
+                intersections: [
+                    {
+                        name: "D1/D2",
+                        shift: 0,
+                    },
+                    {
+                        name: "I1/I2",
+                        shift: 2743,
+                    },
+                    {
+                        name: "J1/J2",
+                        shift: 4545,
+                    },
+                ],
+            },
+            {
+                name: "27R",
+                heading: 275,
+                lda: 7346,
+                tora: 7346,
+                asda: 8016,
+                intersections: [
+                    {
+                        name: "L1/L2",
+                        shift: 0,
+                    },
+                    {
+                        name: "J1/J2",
+                        shift: 2801,
+                    },
+                    {
+                        name: "I1/I2",
+                        shift: 4603,
                     },
                 ],
             },
