@@ -6,6 +6,7 @@ import {
     TORA_SAFETY_MARGIN,
     CLIMBOUT_SPEED_LOSS,
     ROTATE_DURATION,
+    SECONDS_PER_THRUST_SETTING,
 } from "./data/values";
 
 import {
@@ -22,45 +23,56 @@ import {
 // asda = accelerate stop distance available
 function calculateV1(
     VR_kts: number,
+    thrust: number,
     accRate: number,
     decelRate: number,
     asda: number
 ) {
-    // V1 in feet per second
-    // v = sqrt ( 2 * runway length / (1/rate-acc + 1/rate-dec) )
+    let V1_kts = VR_kts;
 
-    /* 
-    const calc_V1_fps_1 = Math.sqrt(
-        (2 * runwayLength) / (1.0 / accRate + 1.0 / decelRate)
-    );
-    */
+    while (V1_kts >= 100) {
+        const V1_fps = V1_kts * KTS_TO_FPS;
 
-    // with margin 2 seconds of V1 speed added
-    const calc_V1_fps =
-        ((Math.SQRT2 *
-            Math.sqrt(
-                asda * accRate + asda * decelRate + 2 * accRate * decelRate
-            )) /
-            Math.sqrt(accRate * decelRate) -
-            2) /
-        (1.0 / accRate + 1.0 / decelRate);
+        /*  for determining exact performance when increasing thrust from 0
+        const timeToIncreaseThrust = thrust * SECONDS_PER_THRUST_SETTING;
+        const distanceToIncreaseThrust = (accRate / 2) * timeToIncreaseThrust;
+        */
 
-    const calc_V1_kts = Math.floor(calc_V1_fps * FPS_TO_KTS);
+        // distance to accelerate to V1 speed
+        const accelerateDistance = (V1_fps * V1_fps) / (2 * accRate);
 
-    // V1 >= 100 kts
-    if (calc_V1_kts < 100) {
-        return -1;
+        // distance required to "switcheroo" from takeoff thrust to idle thrust
+        const timeToDecreaseThrust = thrust * SECONDS_PER_THRUST_SETTING; // assume we go from accRate to decelRate linearly
+        const speedAtIdleThrust_fps =
+            V1_fps + (timeToDecreaseThrust * (accRate + decelRate)) / 2; // the speed of the aircraft once we are applying decelRate
+        const switcherooDistance =
+            V1_fps * timeToDecreaseThrust +
+            ((speedAtIdleThrust_fps - V1_fps) * timeToDecreaseThrust) / 2;
+
+        // distance to stop while at idle thrust
+        const decelerateDistance = (V1_fps * V1_fps) / (2 * decelRate);
+
+        // safety/decision margin, 2 seconds at V1
+        const decisionDistance = 2 * V1_fps;
+
+        const totalDistanceToStop =
+            accelerateDistance +
+            decisionDistance +
+            switcherooDistance +
+            decelerateDistance;
+
+        if (totalDistanceToStop < asda) {
+            return V1_kts;
+        }
+        V1_kts--;
     }
-
-    // V1 <= VR
-    const actual_V1_kts = Math.min(calc_V1_kts, VR_kts);
-    return actual_V1_kts;
+    return -1;
 }
 
 function calculateLiftoffDistance(
     VR_kts: number,
-    accRate: number,
-    thrustMax_kts: number
+    thrustMax_kts: number,
+    accRate: number
 ) {
     const VR_fps = VR_kts * KTS_TO_FPS;
     const thrustMax_fps = thrustMax_kts * KTS_TO_FPS;
@@ -71,7 +83,9 @@ function calculateLiftoffDistance(
         VR_fps + accRate * ROTATE_DURATION
     );
 
-    const rotateDistance = 5 * VR_fps + (5 * (speedAfterRotation - VR_fps)) / 2;
+    const rotateDistance =
+        ROTATE_DURATION * VR_fps +
+        (ROTATE_DURATION * (speedAfterRotation - VR_fps)) / 2;
     const takeoffDistance = accelerateDistance + rotateDistance;
     const requiredDistance = takeoffDistance * TORA_SAFETY_MARGIN;
     return requiredDistance;
@@ -109,13 +123,19 @@ function calculateTakeoffPerformanceData(
             aircraftData.accelerationData,
             thrust
         );
+        const maxSpeedAtThrust = getMaxSpeed(aircraftData.speedData, thrust);
+
+        const requiredDistance = calculateLiftoffDistance(
+            V_R,
+            maxSpeedAtThrust,
+            accRate
+        );
+        canLiftoff = tora > requiredDistance;
+
         const decelRate = getDecelerationRate(aircraftData, "no-rev");
         if (decelRate) {
-            V_1 = calculateV1(V_R, accRate, decelRate, asda);
+            V_1 = calculateV1(V_R, thrust, accRate, decelRate, asda);
             canAccStop = !(V_1 === -1);
-            const maxSpeed = getMaxSpeed(aircraftData.speedData, thrust);
-            canLiftoff =
-                tora > calculateLiftoffDistance(V_2, accRate, maxSpeed);
         }
     }
 

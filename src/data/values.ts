@@ -7,6 +7,7 @@ const ROTATE_DURATION = 4;
 const FLARE_DURATION = 7; // how many seconds the flare should be calculated as
 const LDGDIST_SAFETY_MARGIN = 1.15;
 const VREF_FACTOR = 1.3; // stall speed times this is vref
+const SECONDS_PER_THRUST_SETTING = 0.03275;
 
 export {
     KTS_TO_FPS,
@@ -18,4 +19,5 @@ export {
     FLARE_DURATION,
     LDGDIST_SAFETY_MARGIN,
     VREF_FACTOR,
+    SECONDS_PER_THRUST_SETTING,
 };
