@@ -48,6 +48,7 @@ function calculateV1(
         // the speed of the aircraft once we are applying decelRate
         const speedAtIdleThrust_fps =
             V1_fps + (timeToDecreaseThrust * (accRate + decelRate)) / 2;
+        //console.log("idle speed kts", speedAtIdleThrust_fps * FPS_TO_KTS);
 
         // integral of quadratic function
         // from V1 (at t=0, slope accRate)
@@ -57,10 +58,13 @@ function calculateV1(
             (timeToDecreaseThrust *
                 (2 * speedAtIdleThrust_fps + accRate * timeToDecreaseThrust)) /
                 6;
+        //console.log("switcheroo distance", switcherooDistance);
 
         // distance to stop while at idle thrust
-        const decelerateDistance =
-            (speedAtIdleThrust_fps * speedAtIdleThrust_fps) / (2 * decelRate);
+        const decelerateDistance = Math.abs(
+            (speedAtIdleThrust_fps * speedAtIdleThrust_fps) / (2 * decelRate)
+        );
+        //console.log("deceleration distance", decelerateDistance);
 
         // safety/decision margin, 2 seconds at V1
         const decisionDistance = 2 * V1_fps;
@@ -142,11 +146,9 @@ function calculateTakeoffPerformanceData(
         );
         canLiftoff = tora > requiredDistance;
 
-        const decelRate = getDecelerationRate(aircraftData, "no-rev");
-        if (decelRate) {
-            V_1 = calculateV1(V_R, thrust, accRate, decelRate, asda);
-            canAccStop = !(V_1 === -1);
-        }
+        const decelRate = KTS_TO_FPS * aircraftData.deceleration.noReversers;
+        V_1 = calculateV1(V_R, thrust, accRate, decelRate, asda);
+        canAccStop = !(V_1 === -1);
     }
 
     return {

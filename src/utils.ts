@@ -50,12 +50,12 @@ function getRunwayData(airport: AirportData, runway: string) {
  * Get deceleration rate in feet/second^2
  */
 function getDecelerationRate(aircraftData: AircraftData, id: string) {
-    const decelRate_kts = aircraftData.decleration.find(
-        (decel) => decel.value === (id || "no-rev")
-    )?.rate;
-    if (decelRate_kts) {
-        return KTS_TO_FPS * decelRate_kts;
-    }
+    const deceleration = aircraftData.deceleration;
+    const rate_kts =
+        (id === "idle-rev" && deceleration.idleReversers) ||
+        (id === "max-rev" && deceleration.maxReversers) ||
+        deceleration.noReversers;
+    return rate_kts * KTS_TO_FPS;
 }
 
 export {
