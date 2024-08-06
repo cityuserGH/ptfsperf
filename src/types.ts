@@ -7,11 +7,11 @@ type AircraftData = {
         stall: number;
         max: number;
     };
-    decleration: {
-        value: string;
-        name: string;
-        rate: number;
-    }[];
+    deceleration: {
+        noReversers: number;
+        idleReversers?: number;
+        maxReversers?: number;
+    };
     accelerationData: LinearData;
     speedData: QuadraticData;
 };

@@ -285,15 +285,19 @@ const landingFormInfo: FormInformation = {
             dependsOn: [0],
             optionCallback: ([type]: string[]) => {
                 const acft = getAircraftData(type);
-                const decels = acft?.decleration
-                    .sort((a, b) => (a.rate > b.rate ? 1 : -1))
-                    .map((decel) => {
-                        return {
-                            text: decel.name,
-                            value: decel.value,
-                        };
+                let decels = [];
+                if (acft?.deceleration.idleReversers) {
+                    decels.push({
+                        text: "Idle reversers",
+                        value: "idle-rev",
                     });
-                if (!decels) return [];
+                }
+                if (acft?.deceleration.maxReversers) {
+                    decels.push({
+                        text: "Max reversers",
+                        value: "max-rev",
+                    });
+                }
                 return decels;
             },
         },

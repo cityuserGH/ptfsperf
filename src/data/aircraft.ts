@@ -32,11 +32,11 @@ const aircraftData: AircraftData[] = [
             slope: 5.62,
             base: 4.38,
         },
-        decleration: [
-            { name: "Idle", value: "no-rev", rate: 6.3 },
-            { name: "Idle reverse", value: "idle-rev", rate: 6.72 },
-            { name: "Max reverse", value: "max-rev", rate: 11.2 },
-        ],
+        deceleration: {
+            noReversers: -6.3,
+            idleReversers: -6.72,
+            maxReversers: -11.2,
+        },
         speedData: {
             base: -8.44,
             linear: 99,
@@ -62,11 +62,11 @@ const aircraftData: AircraftData[] = [
             stall: 110,
             max: 475,
         },
-        decleration: [
-            { name: "No reversers", value: "no-rev", rate: 5.98 },
-            { name: "Idle reverse", value: "idle-rev", rate: 6.39 },
-            { name: "Max reverse", value: "max-rev", rate: 10.6 },
-        ],
+        deceleration: {
+            noReversers: -5.98,
+            idleReversers: -6.39,
+            maxReversers: -10.6,
+        },
         accelerationData: {
             base: 5.36,
             slope: 4.13,
@@ -91,23 +91,11 @@ const aircraftData: AircraftData[] = [
             stall: 117,
             max: 566,
         },
-        decleration: [
-            {
-                name: "No reversers",
-                value: "no-rev",
-                rate: 6.18,
-            },
-            {
-                name: "Idle reversers",
-                value: "idle-rev",
-                rate: 6.6,
-            },
-            {
-                name: "Max reversers",
-                value: "max-rev",
-                rate: 10.9,
-            },
-        ],
+        deceleration: {
+            noReversers: -6.18,
+            idleReversers: -6.6,
+            maxReversers: -10.9,
+        },
         accelerationData: {
             base: 4.7,
             slope: 4.69,
@@ -148,23 +136,11 @@ const aircraftData: AircraftData[] = [
             stall: 110,
             max: 454,
         },
-        decleration: [
-            {
-                value: "no-rev",
-                name: "No reversers",
-                rate: 6.29,
-            },
-            {
-                value: "idle-rev",
-                name: "Idle reversers",
-                rate: 6.73,
-            },
-            {
-                value: "max-rev",
-                name: "Max reversers",
-                rate: 11.2,
-            },
-        ],
+        deceleration: {
+            noReversers: -6.29,
+            idleReversers: -6.73,
+            maxReversers: -11.2,
+        },
         accelerationData: {
             base: 4.36,
             slope: 5.6,
@@ -193,23 +169,11 @@ const aircraftData: AircraftData[] = [
             stall: 120,
             max: 518,
         },
-        decleration: [
-            {
-                value: "no-rev",
-                name: "No reversers",
-                rate: 5.99,
-            },
-            {
-                value: "idle-rev",
-                name: "Idle reversers",
-                rate: 6.38,
-            },
-            {
-                value: "max-rev",
-                name: "Max reversers",
-                rate: 10.6,
-            },
-        ],
+        deceleration: {
+            noReversers: -5.99,
+            idleReversers: -6.38,
+            maxReversers: -10.6,
+        },
         accelerationData: {
             base: 4.16,
             slope: 5.34,

@@ -19,7 +19,7 @@ function calculateActualLandingDistance(Vref: number, decelRate: number) {
 
     const flareLength = Vref_fps * FLARE_DURATION;
 
-    const rolloutLength = (Vref_fps * Vref_fps) / (decel_fps * 2);
+    const rolloutLength = Math.abs((Vref_fps * Vref_fps) / (decel_fps * 2));
 
     const actualLength = flareLength + rolloutLength;
     return Math.ceil(actualLength);

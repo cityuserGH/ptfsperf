@@ -44,7 +44,7 @@ function calculateV1(
         // distance required to "switcheroo" from takeoff thrust to idle thrust
 
         // assume we go from accRate to decelRate linearly
-        const timeToDecreaseThrust = thrust * SECONDS_PER_THRUST_SETTING;
+        const timeToDecreaseThrust = thrust * SECONDS_PER_THRUST_SETTING; // todo
         // the speed of the aircraft once we are applying decelRate
         const speedAtIdleThrust_fps =
             V1_fps + (timeToDecreaseThrust * (accRate + decelRate)) / 2;
@@ -59,8 +59,9 @@ function calculateV1(
                 6;
 
         // distance to stop while at idle thrust
-        const decelerateDistance =
-            (speedAtIdleThrust_fps * speedAtIdleThrust_fps) / (2 * decelRate);
+        const decelerateDistance = Math.abs(
+            (speedAtIdleThrust_fps * speedAtIdleThrust_fps) / (2 * decelRate)
+        );
 
         // safety/decision margin, 2 seconds at V1
         const decisionDistance = 2 * V1_fps;
@@ -142,11 +143,9 @@ function calculateTakeoffPerformanceData(
         );
         canLiftoff = tora > requiredDistance;
 
-        const decelRate = getDecelerationRate(aircraftData, "no-rev");
-        if (decelRate) {
-            V_1 = calculateV1(V_R, thrust, accRate, decelRate, asda);
-            canAccStop = !(V_1 === -1);
-        }
+        const decelRate = KTS_TO_FPS * aircraftData.deceleration.noReversers;
+        V_1 = calculateV1(V_R, thrust, accRate, decelRate, asda);
+        canAccStop = !(V_1 === -1);
     }
 
     return {
