@@ -8,6 +8,7 @@ const FLARE_DURATION = 7; // how many seconds the flare should be calculated as
 const LDGDIST_SAFETY_MARGIN = 1.15;
 const VREF_FACTOR = 1.3; // stall speed times this is vref
 const SECONDS_PER_THRUST_SETTING = 0.03275;
+const VMCG_VR_FACTOR = 0.65; // Vmcg = factor * Vr; the minimum value of V1
 
 export {
     KTS_TO_FPS,
@@ -20,4 +21,5 @@ export {
     LDGDIST_SAFETY_MARGIN,
     VREF_FACTOR,
     SECONDS_PER_THRUST_SETTING,
+    VMCG_VR_FACTOR,
 };

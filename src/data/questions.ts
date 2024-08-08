@@ -10,12 +10,14 @@ const questionBank = {
         question: "Aircraft",
         required: true,
         default: "-- Select Aircraft --",
-        options: aircraftData.map((acft) => {
-            return {
-                text: acft.type,
-                value: acft.type,
-            };
-        }),
+        options: aircraftData
+            .sort((a, b) => (a.type > b.type ? 1 : -1))
+            .map((acft) => {
+                return {
+                    text: acft.type,
+                    value: acft.type,
+                };
+            }),
     },
     airport: {
         question: "Airport",

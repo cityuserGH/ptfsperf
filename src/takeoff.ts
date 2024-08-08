@@ -7,6 +7,7 @@ import {
     CLIMBOUT_SPEED_LOSS,
     ROTATE_DURATION,
     SECONDS_PER_THRUST_SETTING,
+    VMCG_VR_FACTOR,
 } from "./data/values";
 
 import {
@@ -28,9 +29,10 @@ function calculateV1(
     decelRate: number,
     asda: number
 ) {
-    let V1_kts = VR_kts;
+    const minimumV1_kts = Math.ceil(VR_kts * VMCG_VR_FACTOR);
 
-    while (V1_kts >= 100) {
+    let V1_kts = VR_kts;
+    while (V1_kts >= minimumV1_kts) {
         const V1_fps = V1_kts * KTS_TO_FPS;
 
         /*  for determining exact performance when increasing thrust from 0
