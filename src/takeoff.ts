@@ -14,7 +14,6 @@ import {
     getAccelerationRate,
     getAircraftData,
     getAirportData,
-    getDecelerationRate,
     getFlapReduction,
     getMaxSpeed,
     getMinimumThrust,
