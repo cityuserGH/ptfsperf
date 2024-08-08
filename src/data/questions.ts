@@ -283,20 +283,20 @@ const landingFormInfo: FormInformation = {
         {
             question: "Reversers",
             required: false,
-            default: "-- Select Reversers --",
+            default: "No reverse thrust",
             dependsOn: [0],
             optionCallback: ([type]: string[]) => {
                 const acft = getAircraftData(type);
                 let decels = [];
                 if (acft?.deceleration.idleReversers) {
                     decels.push({
-                        text: "Idle reversers",
+                        text: "Idle reverse thrust",
                         value: "idle-rev",
                     });
                 }
                 if (acft?.deceleration.maxReversers) {
                     decels.push({
-                        text: "Max reversers",
+                        text: "Max reverse thrust",
                         value: "max-rev",
                     });
                 }
