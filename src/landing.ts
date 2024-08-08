@@ -7,20 +7,17 @@ import {
 import {
     getAircraftData,
     getAirportData,
+    getClosestThrust,
     getDecelerationRate,
     getFlapReduction,
-    getMinimumThrust,
     getRunwayData,
 } from "./utils";
 
-function calculateActualLandingDistance(Vref: number, decelRate: number) {
+function calculateActualLandingDistance(Vref: number, decel_fps: number) {
     const Vref_fps = Vref * KTS_TO_FPS;
-    const decel_fps = decelRate * KTS_TO_FPS;
 
     const flareLength = Vref_fps * FLARE_DURATION;
-
-    const rolloutLength = Math.abs((Vref_fps * Vref_fps) / (decel_fps * 2));
-
+    const rolloutLength = Math.abs((Vref_fps * Vref_fps) / (2 * decel_fps));
     const actualLength = flareLength + rolloutLength;
     return Math.ceil(actualLength);
 }
@@ -84,14 +81,14 @@ function calculateLandingPerformance(
         flapReduction,
         decelRate
     );
-    const thrustRequired = getMinimumThrust(
+    const VappThrust = getClosestThrust(
         acftData.speedData,
         performance.Vapp + flapReduction
     );
 
     return {
         ...performance,
-        thrust: thrustRequired,
+        thrust: VappThrust,
     };
 }
 
