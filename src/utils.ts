@@ -17,6 +17,20 @@ function getMaxSpeed(VmaxData: QuadraticData, thrust: number) {
     );
 }
 
+function getClosestThrust(Vmaxdata: QuadraticData, speed: number) {
+    let minimumDifference = speed;
+    let closestThrust = 0;
+    for (let thrust = 1; thrust < 100; thrust++) {
+        const maxSpeed = getMaxSpeed(Vmaxdata, thrust);
+        const candidateDifference = Math.abs(maxSpeed - speed);
+        if (candidateDifference < minimumDifference) {
+            minimumDifference = candidateDifference;
+            closestThrust = thrust;
+        }
+    }
+    return closestThrust;
+}
+
 // Get the thrust required to reach at least the speed (kts) provided
 function getMinimumThrust(VmaxData: QuadraticData, speed: number) {
     for (let thrust = 1; thrust < 100; thrust++) {
@@ -61,6 +75,7 @@ function getDecelerationRate(aircraftData: AircraftData, id: string) {
 export {
     getAccelerationRate,
     getMaxSpeed,
+    getClosestThrust,
     getMinimumThrust,
     getFlapReduction,
     getAircraftData,
