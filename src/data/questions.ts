@@ -67,7 +67,19 @@ const questionBank = {
 const takeoffFormInfo: FormInformation = {
     submitText: "Calculate!",
     callback: (options) => {
-        const spanIds = ["to-results", "v1", "vr", "v2", "to-thrust"];
+        const spanIds = [
+            "to-results",
+            "v1",
+            "vr",
+            "v2",
+            "to-thrust",
+            "asdist",
+            "asda",
+            "asd-margin",
+            "torun",
+            "tora",
+            "tor-margin",
+        ];
         const spans: { [id: string]: HTMLSpanElement } = {};
         spanIds.forEach((id) => {
             const span = document.querySelector("#" + id) as HTMLSpanElement;
@@ -85,21 +97,51 @@ const takeoffFormInfo: FormInformation = {
                 parseInt(flaps)
             );
             if (results) {
-                const { canLiftoff, canAccelStop, thrust, v1, vr, v2 } =
-                    results;
+                const {
+                    canLiftoff,
+                    canAccelStop,
+                    thrust,
+                    v1,
+                    vr,
+                    v2,
+                    torun,
+                    asdist,
+                    tora,
+                    asda,
+                } = results;
                 const takeoffPossible = canLiftoff && canAccelStop;
+                const liftoffMargin = tora - torun;
+                const stopMargin = asda - asdist;
 
-                const texts = takeoffPossible
-                    ? ["Takeoff is possible.", v1, vr, v2, thrust].map((text) =>
-                          text.toString()
-                      )
-                    : [
-                          "Warning! Safe takeoff is not possible. Try using a higher flap setting or a longer runway.",
-                          "???",
-                          "???",
-                          "???",
-                          "???",
-                      ];
+                const texts = (
+                    takeoffPossible
+                        ? [
+                              "Takeoff is possible.",
+                              v1,
+                              vr,
+                              v2,
+                              thrust,
+                              asdist,
+                              asda,
+                              stopMargin,
+                              torun,
+                              tora,
+                              liftoffMargin,
+                          ]
+                        : [
+                              "Warning! Safe takeoff is not possible. Try using a higher flap setting or a longer runway.",
+                              "???",
+                              "???",
+                              "???",
+                              "???",
+                              asdist,
+                              asda,
+                              stopMargin,
+                              torun,
+                              tora,
+                              liftoffMargin,
+                          ]
+                ).map((text) => text.toString());
 
                 spanIds
                     .map((id) => spans[id])
