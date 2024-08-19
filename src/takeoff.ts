@@ -31,6 +31,7 @@ function calculateV1(
     const minimumV1_kts = Math.ceil(VR_kts * VMCG_VR_FACTOR);
 
     let V1_kts = VR_kts;
+    let totalDistanceToStop = 0;
     while (V1_kts >= minimumV1_kts) {
         const V1_fps = V1_kts * KTS_TO_FPS;
 
@@ -70,18 +71,22 @@ function calculateV1(
         // safety/decision margin, 2 seconds at V1
         const decisionDistance = 2 * V1_fps;
 
-        const totalDistanceToStop =
+        totalDistanceToStop = Math.ceil(
             accelerateDistance +
-            decisionDistance +
-            switcherooDistance +
-            decelerateDistance;
+                decisionDistance +
+                switcherooDistance +
+                decelerateDistance
+        );
 
         if (totalDistanceToStop < asda) {
-            return V1_kts;
+            return {
+                asdist: totalDistanceToStop,
+                v1: V1_kts,
+            };
         }
         V1_kts--;
     }
-    return -1;
+    return { asdist: totalDistanceToStop, v1: -1 };
 }
 
 function calculateLiftoffDistance(
@@ -107,14 +112,11 @@ function calculateLiftoffDistance(
 }
 
 function calculateTakeoffPerformanceData(
-    runwayData: RunwayData,
     aircraftData: AircraftData,
-    takeoffShift: number,
+    asda: number,
+    tora: number,
     flapReduction: number
 ) {
-    const asda = runwayData.asda - takeoffShift;
-    const tora = runwayData.tora - takeoffShift;
-
     const V_R = aircraftData.speeds.rotate - flapReduction;
     const V_2 = V_R + 4;
 
@@ -129,6 +131,8 @@ function calculateTakeoffPerformanceData(
     let V_1 = -1;
     let canAccStop = false;
     let canLiftoff = false;
+    let liftoffDistance = 0;
+    let accelerateStopDistance = 0;
     let thrust = minimumThrust - 1;
     while (thrust < 100 && (!canAccStop || !canLiftoff)) {
         thrust++;
@@ -140,15 +144,19 @@ function calculateTakeoffPerformanceData(
         );
         const maxSpeedAtThrust = getMaxSpeed(aircraftData.speedData, thrust);
 
-        const requiredDistance = calculateLiftoffDistance(
-            V_R,
-            maxSpeedAtThrust,
-            accRate
+        liftoffDistance = Math.ceil(
+            calculateLiftoffDistance(V_R, maxSpeedAtThrust, accRate)
         );
-        canLiftoff = tora > requiredDistance;
+        canLiftoff = tora > liftoffDistance;
 
         const decelRate = KTS_TO_FPS * aircraftData.deceleration.noReversers;
-        V_1 = calculateV1(V_R, thrust, accRate, decelRate, asda);
+        ({ v1: V_1, asdist: accelerateStopDistance } = calculateV1(
+            V_R,
+            thrust,
+            accRate,
+            decelRate,
+            asda
+        ));
         canAccStop = !(V_1 === -1);
     }
 
@@ -159,6 +167,8 @@ function calculateTakeoffPerformanceData(
         v1: V_1,
         vr: V_R,
         v2: V_2,
+        torun: liftoffDistance,
+        asdist: accelerateStopDistance,
     };
 }
 
@@ -183,18 +193,22 @@ function calculateTakeoffPerformance(
         rwyData.intersections.find((hold) => hold.name === intersection)
             ?.shift || 0;
 
+    const asda = rwyData.asda - takeoffShift;
+    const tora = rwyData.tora - takeoffShift;
+
     const acftData = getAircraftData(type);
     if (!acftData) {
         return;
     }
     const flapReduction = getFlapReduction(acftData, flaps);
 
-    return calculateTakeoffPerformanceData(
-        rwyData,
+    const performance = calculateTakeoffPerformanceData(
         acftData,
-        takeoffShift,
+        asda,
+        tora,
         flapReduction
     );
+    return { ...performance, asda, tora };
 }
 
 export { calculateTakeoffPerformance };
