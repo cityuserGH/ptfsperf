@@ -76,6 +76,7 @@ const takeoffFormInfo: FormInformation = {
             "asdist",
             "asda",
             "asd-margin",
+            "atod",
             "torun",
             "tora",
             "tor-margin",
@@ -108,6 +109,7 @@ const takeoffFormInfo: FormInformation = {
                     asdist,
                     tora,
                     asda,
+                    atod,
                 } = results;
                 const takeoffPossible = canLiftoff && canAccelStop;
                 const liftoffMargin = tora - torun;
@@ -124,6 +126,7 @@ const takeoffFormInfo: FormInformation = {
                               asdist,
                               asda,
                               stopMargin,
+                              atod,
                               torun,
                               tora,
                               liftoffMargin,
@@ -137,6 +140,7 @@ const takeoffFormInfo: FormInformation = {
                               asdist,
                               asda,
                               stopMargin,
+                              atod,
                               torun,
                               tora,
                               liftoffMargin,

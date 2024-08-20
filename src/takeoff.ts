@@ -107,8 +107,7 @@ function calculateLiftoffDistance(
         ROTATE_DURATION * VR_fps +
         (ROTATE_DURATION * (speedAfterRotation - VR_fps)) / 2;
     const takeoffDistance = accelerateDistance + rotateDistance;
-    const requiredDistance = takeoffDistance * TORA_SAFETY_MARGIN;
-    return requiredDistance;
+    return takeoffDistance;
 }
 
 function calculateTakeoffPerformanceData(
@@ -132,6 +131,7 @@ function calculateTakeoffPerformanceData(
     let canAccStop = false;
     let canLiftoff = false;
     let liftoffDistance = 0;
+    let takeoffRun = 0;
     let accelerateStopDistance = 0;
     let thrust = minimumThrust - 1;
     while (thrust < 100 && (!canAccStop || !canLiftoff)) {
@@ -147,7 +147,8 @@ function calculateTakeoffPerformanceData(
         liftoffDistance = Math.ceil(
             calculateLiftoffDistance(V_R, maxSpeedAtThrust, accRate)
         );
-        canLiftoff = tora > liftoffDistance;
+        takeoffRun = Math.ceil(liftoffDistance * TORA_SAFETY_MARGIN);
+        canLiftoff = tora > takeoffRun;
 
         const decelRate = KTS_TO_FPS * aircraftData.deceleration.noReversers;
         ({ v1: V_1, asdist: accelerateStopDistance } = calculateV1(
@@ -167,7 +168,8 @@ function calculateTakeoffPerformanceData(
         v1: V_1,
         vr: V_R,
         v2: V_2,
-        torun: liftoffDistance,
+        atod: liftoffDistance,
+        torun: takeoffRun,
         asdist: accelerateStopDistance,
     };
 }
