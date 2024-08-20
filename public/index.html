@@ -49,24 +49,40 @@
                 </div>
                 <br />
                 <div>
-                    <table>
+                    <button id="to-details-button">
+                        Show detailed information
+                    </button>
+                    <table hidden id="to-details-table">
                         <tbody>
                             <tr>
-                                <td>Liftoff distance margin:</td>
+                                <td>Actual takeoff distance:</td>
+                                <td id="atod">???</td>
+                                <td>ft</td>
+                            </tr>
+                            <tr>
+                                <td>Takeoff run required (+15%):</td>
+                                <td id="torun">???</td>
+                                <td>ft</td>
+                            </tr>
+                            <tr>
+                                <td>Takeoff distance margin:</td>
                                 <td id="tor-margin">???</td>
                                 <td>ft</td>
                                 <td>
-                                    (<span id="torun">???</span> ft required,
-                                    <span id="tora">???</span> ft available)
+                                    (<span id="tora">???</span> ft available)
                                 </td>
+                            </tr>
+                            <tr>
+                                <td>Accelerate-stop distance:</td>
+                                <td id="asdist">???</td>
+                                <td>ft</td>
                             </tr>
                             <tr>
                                 <td>Accelerate-stop distance margin:</td>
                                 <td id="asd-margin">???</td>
                                 <td>ft</td>
                                 <td>
-                                    (<span id="asdist">???</span> ft used,
-                                    <span id="asda">???</span> ft available)
+                                    (<span id="asda">???</span> ft available)
                                 </td>
                             </tr>
                         </tbody>
@@ -79,30 +95,6 @@
 
                 <p>Results: <span id="ldg-results"></span></p>
 
-                <div>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>Actual landing distance:</td>
-                                <td id="ald">???</td>
-                                <td>ft</td>
-                            </tr>
-                            <tr>
-                                <td>Landing distance required (LDR):</td>
-                                <td id="ldr">???</td>
-                                <td>ft</td>
-                            </tr>
-                            <tr>
-                                <td>Landing distance margin:</td>
-                                <td id="ldg-margin">???</td>
-                                <td>ft</td>
-                                <td>
-                                    (<span id="lda">???</span> ft available)
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
                 <br />
                 <div>
                     <table>
@@ -125,6 +117,34 @@
                     Thrust setting for V<sub>APP</sub>:
                     <span id="ldg-thrust">???</span> %
                 </p>
+
+                <div>
+                    <button id="ldg-details-button">
+                        Show detailed information
+                    </button>
+                    <table hidden id="ldg-details-table">
+                        <tbody>
+                            <tr>
+                                <td>Actual landing distance:</td>
+                                <td id="ald">???</td>
+                                <td>ft</td>
+                            </tr>
+                            <tr>
+                                <td>Landing distance required (+15%):</td>
+                                <td id="ldr">???</td>
+                                <td>ft</td>
+                            </tr>
+                            <tr>
+                                <td>Landing distance margin:</td>
+                                <td id="ldg-margin">???</td>
+                                <td>ft</td>
+                                <td>
+                                    (<span id="lda">???</span> ft available)
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
         <div class="row">
