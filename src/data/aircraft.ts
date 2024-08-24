@@ -369,6 +369,43 @@ const aircraftData: AircraftData[] = [
             quadratic: 380,
         },
     },
+    {
+        type: "Embraer E190",
+        flaps: [
+            {
+                setting: 1,
+                reduction: 7,
+            },
+            {
+                setting: 2,
+                reduction: 14,
+            },
+            {
+                setting: 3,
+                reduction: 21,
+            },
+        ],
+        speeds: {
+            rotate: 136,
+            landing: 134,
+            stall: 105,
+            max: 470,
+        },
+        deceleration: {
+            noReversers: -6.29,
+            idleReversers: -6.73,
+            maxReversers: -11.2,
+        },
+        accelerationData: {
+            base: 4.38,
+            slope: 5.62,
+        },
+        speedData: {
+            base: -7.4,
+            linear: 100,
+            quadratic: 385,
+        },
+    },
 ];
 
 export { aircraftData };
