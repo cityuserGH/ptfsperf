@@ -1,30 +1,14 @@
 type AircraftData = {
     type: string;
-    flaps: { name?: string; setting: number; reduction: number }[];
+    flaps: { name?: string; setting: number }[];
     speeds: {
-        rotate: number;
-        landing: number;
-        stall: number;
         max: number;
+        transition: number;
+        stall: number;
     };
-    deceleration: {
-        noReversers: number;
-        idleReversers?: number;
-        maxReversers?: number;
-    };
-    accelerationData: LinearData;
-    speedData: QuadraticData;
-};
-
-type LinearData = {
-    base: number;
-    slope: number;
-};
-
-type QuadraticData = {
-    base: number;
-    linear: number;
-    quadratic: number;
+    maxFlapReduction: number;
+    acceleration: number;
+    hasReversers: boolean;
 };
 
 type AirportData = {
@@ -65,8 +49,6 @@ export {
     AircraftData,
     AirportData,
     RunwayData,
-    QuadraticData,
-    LinearData,
     FormInformation,
     FormQuestion,
 };

@@ -1,81 +1,52 @@
-import { AircraftData, RunwayData } from "./types";
+import { AircraftData } from "./types";
 
 import {
     KTS_TO_FPS,
-    FPS_TO_KTS,
     TORA_SAFETY_MARGIN,
-    CLIMBOUT_SPEED_LOSS,
     ROTATE_DURATION,
-    SECONDS_PER_THRUST_SETTING,
+    FULL_THRUST_TIME,
     VMCG_VR_FACTOR,
+    DELTA_T,
+    APPROACHING_THROTTLE_SPEED_FRACTION,
+    LOW_REGIME_THRESHOLD,
+    HIGH_REGIME_THRESHOLD,
+    THRUST_SPEED_ACCELERATION
 } from "./data/values";
 
 import {
-    getAccelerationRate,
     getAircraftData,
     getAirportData,
-    getFlapReduction,
-    getMaxSpeed,
+    getFlapsMaxSpeed,
     getMinimumThrust,
     getRunwayData,
+    getThrustSpeed,
 } from "./utils";
 
-// asda = accelerate stop distance available
 function calculateV1(
     VR_kts: number,
     thrust: number,
-    accRate: number,
-    decelRate: number,
-    asda: number
+    maxSpeed: number,
+    maxAcceleration: number,
+    asda: number // accelerate stop distance available
 ) {
     const minimumV1_kts = Math.ceil(VR_kts * VMCG_VR_FACTOR);
 
     let V1_kts = VR_kts;
     let totalDistanceToStop = 0;
     while (V1_kts >= minimumV1_kts) {
-        const V1_fps = V1_kts * KTS_TO_FPS;
-
-        /*  for determining exact performance when increasing thrust from 0
-        const timeToIncreaseThrust = thrust * SECONDS_PER_THRUST_SETTING;
-        const distanceToIncreaseThrust = (accRate / 2) * timeToIncreaseThrust;
-        */
-
         // distance to accelerate to V1 speed
-        const accelerateDistance = (V1_fps * V1_fps) / (2 * accRate);
+        const accelerateDistance = calculateAccelerateDistance(V1_kts, thrust, maxSpeed, maxAcceleration, false);
 
-        // distance required to "switcheroo" from takeoff thrust to idle thrust
+        // we are at V1, retard and stop (decelerate)
+        const decelerateDistance = calculateDecelerateDistance(V1_kts, thrust, maxSpeed, maxAcceleration, false);
 
-        // assume we go from accRate to decelRate linearly
-        const timeToDecreaseThrust = thrust * SECONDS_PER_THRUST_SETTING;
-        // the speed of the aircraft once we are applying decelRate
-        const speedAtIdleThrust_fps =
-            V1_fps + (timeToDecreaseThrust * (accRate + decelRate)) / 2;
-        //console.log("idle speed kts", speedAtIdleThrust_fps * FPS_TO_KTS);
-
-        // integral of quadratic function
-        // from V1 (at t=0, slope accRate)
-        // to speedAtIdleThrust (t=timeToDecreaseThrust, slope decelRate)
-        const switcherooDistance =
-            V1_fps * timeToDecreaseThrust +
-            (timeToDecreaseThrust *
-                (2 * speedAtIdleThrust_fps + accRate * timeToDecreaseThrust)) /
-                6;
-        //console.log("switcheroo distance", switcherooDistance);
-
-        // distance to stop while at idle thrust
-        const decelerateDistance = Math.abs(
-            (speedAtIdleThrust_fps * speedAtIdleThrust_fps) / (2 * decelRate)
-        );
-        //console.log("deceleration distance", decelerateDistance);
-
-        // safety/decision margin, 2 seconds at V1
-        const decisionDistance = 2 * V1_fps;
+        // safety margin, 2 seconds at V1, arbitrary but by-the-book
+        const safetyMarginDistance = 2 * V1_kts * KTS_TO_FPS;
 
         totalDistanceToStop = Math.ceil(
             accelerateDistance +
-                decisionDistance +
-                switcherooDistance +
-                decelerateDistance
+                decelerateDistance + 
+                safetyMarginDistance
         );
 
         if (totalDistanceToStop < asda) {
@@ -89,43 +60,193 @@ function calculateV1(
     return { asdist: totalDistanceToStop, v1: -1 };
 }
 
-function calculateLiftoffDistance(
-    VR_kts: number,
-    thrustMax_kts: number,
-    accRate: number
+function calculateNewSpeed(
+    thrust: number,
+    maxSpeed: number,
+    maxAcceleration: number,
+    speed: number,
+    dt: number,
+    reverseThrust: number = 0,
 ) {
-    const VR_fps = VR_kts * KTS_TO_FPS;
-    const thrustMax_fps = thrustMax_kts * KTS_TO_FPS;
-    const accelerateDistance = (VR_fps * VR_fps) / (accRate * 2);
+    const thrustSpeed = getThrustSpeed(maxSpeed, thrust);
 
-    const speedAfterRotation = Math.min(
-        thrustMax_fps,
-        VR_fps + accRate * ROTATE_DURATION
-    );
+    let acceleration;
+    if (speed < thrustSpeed) {
+        // acceleration
+        const lowRegimeAccel = thrust * maxAcceleration;
+        const highRegimeAccel = (1.5 * thrust - 0.5) * maxAcceleration;
 
-    const rotateDistance =
-        ROTATE_DURATION * VR_fps +
-        (ROTATE_DURATION * (speedAfterRotation - VR_fps)) / 2;
-    const takeoffDistance = accelerateDistance + rotateDistance;
-    return takeoffDistance;
+        const approachingSpeed = APPROACHING_THROTTLE_SPEED_FRACTION * thrustSpeed;
+
+        // determine acceleration
+        if (speed < LOW_REGIME_THRESHOLD) {
+            // low speed regime
+            acceleration = lowRegimeAccel;
+
+        } else if (speed < HIGH_REGIME_THRESHOLD) {
+            // transition regime
+            const fraction = (speed - LOW_REGIME_THRESHOLD) / (HIGH_REGIME_THRESHOLD - LOW_REGIME_THRESHOLD);
+            acceleration = fraction * highRegimeAccel + (1 - fraction) * lowRegimeAccel;
+
+        } else if (speed < approachingSpeed) {
+            // high speed regime
+            acceleration = highRegimeAccel;
+        } else if (speed <= thrustSpeed) {
+            // approaching
+            const fraction = (speed - approachingSpeed) / (thrustSpeed - approachingSpeed);
+            acceleration = fraction * THRUST_SPEED_ACCELERATION + (1 - fraction) * highRegimeAccel;
+        } else {
+            acceleration = 0;
+        }
+    } else if (speed > thrustSpeed) {
+        // deceleration **ON THE GROUND**
+
+        const LOW_BRAKING_THRESHOLD = 80;
+        const IDLE_THRUST_BRAKING = -7;
+        const FULL_REVERSE_BRAKING = -9;
+
+        if (reverseThrust > 0) {
+            acceleration = reverseThrust * FULL_REVERSE_BRAKING;
+        } else {
+            // acceleration decreases from around 80 kts to 0 kts
+            // assuming thrust is 0... what if it isn't?
+            const approachingSpeed = LOW_BRAKING_THRESHOLD;
+            if (speed > approachingSpeed) {
+                acceleration = IDLE_THRUST_BRAKING; // what is this number? does it depend on max acceleration? is it separate or fixed?
+            } else {
+                // approaching
+                const fraction = (speed - thrustSpeed) / (approachingSpeed - thrustSpeed);
+                acceleration = IDLE_THRUST_BRAKING / 2 * (1 + fraction);
+            }
+        }
+
+    } else {
+        // none
+        acceleration = 0;
+    }
+    // calculate speed change given dt
+    const unclamped = speed + dt * acceleration;
+    let clamped;
+    if (speed < thrustSpeed) {
+        // clamp acceleration
+        clamped = Math.max(Math.min(thrustSpeed, unclamped), 0);
+    } else if (speed > thrustSpeed) {
+        // clamp deceleration
+        clamped = Math.max(Math.max(thrustSpeed, unclamped), 0);
+    } else {
+        clamped = thrustSpeed;
+    }
+    //console.log("new speed:", clamped);
+    return clamped;
+}
+
+function calculateAccelerateDistance(
+    targetSpeed: number,
+    thrust: number,
+    maxSpeed: number,
+    maxAcceleration: number,
+    includeLiftoff: boolean,
+) {
+    // estimate with trapizodial rule
+
+    // reachable at all?
+    if (targetSpeed > getThrustSpeed(maxSpeed, thrust)) {
+        return Number.MAX_SAFE_INTEGER;
+    }
+
+    const dt = DELTA_T;
+    let currentSpeed = 0;
+    let distance = 0;
+    // power-up
+    const powerUpTime = thrust * FULL_THRUST_TIME;
+    const powerUpDeltas = powerUpTime / dt;
+    for (let i = 0; i < powerUpDeltas; i++) {
+        const thrustSoFar = thrust * i / powerUpDeltas;
+        const newSpeed = calculateNewSpeed(thrustSoFar, maxSpeed, maxAcceleration, currentSpeed, dt);
+        distance += dt * (currentSpeed + newSpeed) / 2; // average of prior and later
+        currentSpeed = newSpeed;
+    }
+
+    // continue until rotation speed
+    while (currentSpeed < targetSpeed) {
+        const newSpeed = calculateNewSpeed(thrust, maxSpeed, maxAcceleration, currentSpeed, dt);
+        distance += dt * (currentSpeed + newSpeed) / 2;
+        currentSpeed = newSpeed;
+    }
+
+    if (includeLiftoff) {
+        // add rotate distance
+        const rotationTime = ROTATE_DURATION;
+        const rotationDeltas = rotationTime / dt;
+        for (let i = 0; i < rotationDeltas; i++) {
+            const newSpeed = calculateNewSpeed(thrust, maxSpeed, maxAcceleration, currentSpeed, dt);
+            distance += dt * (currentSpeed + newSpeed) / 2;
+            currentSpeed = newSpeed;
+        }
+    }
+
+    return distance * KTS_TO_FPS;
+}
+
+function calculateDecelerateDistance(
+    startSpeed: number,
+    initialThrust: number,
+    maxSpeed: number,
+    maxAcceleration: number,
+    useReverseThrust: boolean,
+) {
+
+    const dt = DELTA_T;
+    let currentSpeed = startSpeed;
+    let distance = 0;
+    // power-down
+    const retardTime = initialThrust * FULL_THRUST_TIME;
+    const retardDeltas = retardTime / dt;
+    for (let i = 0; i < retardDeltas; i++) {
+        const thrustSoFar = initialThrust * (1 - i / retardDeltas);
+        const newSpeed = calculateNewSpeed(thrustSoFar, maxSpeed, maxAcceleration, currentSpeed, dt);
+        distance += dt * (currentSpeed + newSpeed) / 2;
+        currentSpeed = newSpeed;
+    }
+
+    // increase reverse thrust
+    if (useReverseThrust) {
+        const reverseTime = FULL_THRUST_TIME;
+        const reverseDeltas = reverseTime / dt;
+        for (let i = 0; i < reverseDeltas; i++) {
+            const reverseSoFar =  i / reverseDeltas;
+            const newSpeed = calculateNewSpeed(0, maxSpeed, maxAcceleration, currentSpeed, dt, reverseSoFar);
+            distance += dt * (currentSpeed + newSpeed) / 2;
+            currentSpeed = newSpeed;
+        }
+    }
+    // continue until we stop
+    const reverseThrust = useReverseThrust ? 1 : 0;
+    while (currentSpeed > 0.5) {
+        const newSpeed = calculateNewSpeed(0, maxSpeed, maxAcceleration, currentSpeed, dt, reverseThrust);
+        distance += dt * (currentSpeed + newSpeed) / 2;
+        currentSpeed = newSpeed;
+    }
+
+    return distance * KTS_TO_FPS;
 }
 
 function calculateTakeoffPerformanceData(
     aircraftData: AircraftData,
     asda: number,
     tora: number,
-    flapReduction: number
+    flapsFraction: number
 ) {
-    const V_R = aircraftData.speeds.rotate - flapReduction;
+    const V_R = Math.ceil(aircraftData.speeds.transition + 1 - flapsFraction * aircraftData.maxFlapReduction);
     const V_2 = V_R + 4;
 
-    const climboutSpeed = V_2 + 10 + CLIMBOUT_SPEED_LOSS;
+    const climboutSpeed = V_2;
 
-    // thrust is NOT affected by flap reduction
-    const minimumThrust = getMinimumThrust(
-        aircraftData.speedData,
-        climboutSpeed + flapReduction
-    );
+    // flaps max speed
+    const maxSpeed = getFlapsMaxSpeed(aircraftData.speeds.max, flapsFraction);
+    const maxAcceleration = aircraftData.acceleration; // does not depend on flaps
+
+    const minimumThrust = getMinimumThrust(maxSpeed, climboutSpeed);
 
     let V_1 = -1;
     let canAccStop = false;
@@ -137,25 +258,17 @@ function calculateTakeoffPerformanceData(
     while (thrust < 100 && (!canAccStop || !canLiftoff)) {
         thrust++;
 
-        // in feet/second^2
-        const accRate = getAccelerationRate(
-            aircraftData.accelerationData,
-            thrust
-        );
-        const maxSpeedAtThrust = getMaxSpeed(aircraftData.speedData, thrust);
-
-        liftoffDistance = Math.ceil(
-            calculateLiftoffDistance(V_R, maxSpeedAtThrust, accRate)
-        );
+        liftoffDistance = Math.ceil(calculateAccelerateDistance(V_R, thrust / 100, maxSpeed, maxAcceleration, true));
         takeoffRun = Math.ceil(liftoffDistance * TORA_SAFETY_MARGIN);
         canLiftoff = tora > takeoffRun;
 
-        const decelRate = KTS_TO_FPS * aircraftData.deceleration.noReversers;
+        // deceleration, V1 speed
+
         ({ v1: V_1, asdist: accelerateStopDistance } = calculateV1(
             V_R,
-            thrust,
-            accRate,
-            decelRate,
+            thrust / 100,
+            maxSpeed,
+            maxAcceleration,
             asda
         ));
         canAccStop = !(V_1 === -1);
@@ -181,8 +294,6 @@ function calculateTakeoffPerformance(
     intersection: string,
     flaps: number
 ) {
-    // data in
-
     const aptData = getAirportData(airport);
     if (!aptData) {
         return;
@@ -202,15 +313,16 @@ function calculateTakeoffPerformance(
     if (!acftData) {
         return;
     }
-    const flapReduction = getFlapReduction(acftData, flaps);
+
+    const flapsFraction = (flaps || 0) / (acftData.flaps.length);
 
     const performance = calculateTakeoffPerformanceData(
         acftData,
         asda,
         tora,
-        flapReduction
+        flapsFraction
     );
     return { ...performance, asda, tora };
 }
 
-export { calculateTakeoffPerformance };
+export { calculateTakeoffPerformance, calculateDecelerateDistance };

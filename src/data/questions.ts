@@ -132,7 +132,7 @@ const takeoffFormInfo: FormInformation = {
                               liftoffMargin,
                           ]
                         : [
-                              "Warning! Safe takeoff is not possible. Try using a higher flap setting or a longer runway.",
+                              "Safe takeoff is not possible. Try a higher flap setting or a longer runway.",
                               "???",
                               "???",
                               "???",
@@ -268,7 +268,7 @@ const landingFormInfo: FormInformation = {
                 const texts = [
                     canStop
                         ? "Landing is possible."
-                        : "Warning! Safe landing is not possible. Try using reversers, a higher flap setting or a longer runway.",
+                        : "Safe landing is not possible. Try reversers, a higher flap setting or a longer runway.",
                     ald,
                     ldr,
                     lda,
@@ -334,13 +334,7 @@ const landingFormInfo: FormInformation = {
             optionCallback: ([type]: string[]) => {
                 const acft = getAircraftData(type);
                 let decels = [];
-                if (acft?.deceleration.idleReversers) {
-                    decels.push({
-                        text: "Idle reverse thrust",
-                        value: "idle-rev",
-                    });
-                }
-                if (acft?.deceleration.maxReversers) {
+                if (acft?.hasReversers) {
                     decels.push({
                         text: "Max reverse thrust",
                         value: "max-rev",
