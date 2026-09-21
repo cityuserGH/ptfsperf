@@ -171,47 +171,55 @@ const airportData: AirportData[] = [
             {
                 name: "33",
                 heading: 331,
-                lda: 5575,
-                tora: 5575,
-                asda: 5875,
+                lda: 6478,
+                tora: 6478,
+                asda: 6478,
                 intersections: [
                     {
                         name: "E",
-                        shift: 0,
+                        shift: 557,
                     },
                     {
-                        name: "D2/A2/A",
-                        shift: 1128,
+                        name: "A/A2/D",
+                        shift: 1755,
+                    },
+                    {
+                        name: "RWY 11/29",
+                        shift: 2821
                     },
                     {
                         name: "C",
-                        shift: 3541,
+                        shift: 4580,
                     },
                 ],
             },
             {
                 name: "15",
                 heading: 151,
-                lda: 5575,
-                tora: 5875,
-                asda: 5986,
+                lda: 6183,
+                tora: 6478,
+                asda: 6478,
                 intersections: [
                     {
                         name: "B",
-                        shift: 300,
+                        shift: 295,
                     },
                     {
                         name: "C",
-                        shift: 2335,
+                        shift: 1899,
                     },
+                    {
+                        name: "RWY 11/29",
+                        shift: 3657,
+                    }
                 ],
             },
             {
                 name: "11",
                 heading: 111,
-                lda: 7397,
-                tora: 7397,
-                asda: 7823,
+                lda: 7415,
+                tora: 7415,
+                asda: 7843,
                 intersections: [
                     {
                         name: "B",
@@ -219,20 +227,24 @@ const airportData: AirportData[] = [
                     },
                     {
                         name: "A1/C1",
-                        shift: 1751,
+                        shift: 1761,
+                    },
+                    {
+                        name: "RWY 15/33",
+                        shift: 2633
                     },
                     {
                         name: "A2/C2",
-                        shift: 3737,
+                        shift: 3741,
                     },
                 ],
             },
             {
                 name: "29",
                 heading: 291,
-                lda: 7397,
-                tora: 7397,
-                asda: 7523,
+                lda: 7415,
+                tora: 7415,
+                asda: 7539,
                 intersections: [
                     {
                         name: "A5/C5",
@@ -240,12 +252,16 @@ const airportData: AirportData[] = [
                     },
                     {
                         name: "A4/C4",
-                        shift: 1309,
+                        shift: 1314,
                     },
                     {
                         name: "A3/C3",
-                        shift: 2397,
+                        shift: 2402,
                     },
+                    {
+                        name: "A2/C2",
+                        shift: 3674,
+                    }
                 ],
             },
         ],
@@ -822,6 +838,96 @@ const airportData: AirportData[] = [
                 ],
             },
         ],
+    },
+    {
+        name: "Keflavik",
+        icao: "IKFL",
+        runways: [
+            {
+                name: "07",
+                heading: 67,
+                lda: 5885,
+                tora: 5885,
+                asda: 6529,
+                intersections: [
+                    {
+                        name: "E/F",
+                        shift: 62,
+                    },
+                    {
+                        name: "D/G",
+                        shift: 1524,
+                    },
+                    {
+                        name: "C",
+                        shift: 3422
+                    },
+                    {
+                        name: "RWY 16/34",
+                        shift: 3996
+                    },
+                ]
+            },
+            {
+                name: "25",
+                heading: 247,
+                lda: 5885,
+                tora: 5885,
+                asda: 6013,
+                intersections: [
+                    {
+                        name: "B/N",
+                        shift: 62
+                    },
+                    {
+                        name: "RWY 16/34",
+                        shift: 1889
+                    },
+                    {
+                        name: "C",
+                        shift: 2462
+                    },
+                    {
+                        name: "D/G",
+                        shift: 4360
+                    }
+                ]
+            },
+            {
+                name: "16",
+                heading: 157,
+                lda: 5871,
+                tora: 5871,
+                asda: 6214,
+                intersections: [
+                    {
+                        name: "A/B",
+                        shift: 62
+                    },
+                    {
+                        name: "RWY 07/25",
+                        shift: 2267
+                    }
+                ]
+            },
+            {
+                name: "34",
+                heading: 337,
+                lda: 5871,
+                tora: 5871,
+                asda: 6218,
+                intersections: [
+                    {
+                        name: "C/P",
+                        shift: 62
+                    },
+                    {
+                        name: "RWY 07/25",
+                        shift: 3605
+                    }
+                ]
+            }
+        ]
     },
 ];
 

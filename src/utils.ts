@@ -1,28 +1,34 @@
-import { AircraftData, AirportData, LinearData, QuadraticData } from "./types";
-import { KTS_TO_FPS } from "./data/values";
+import { AirportData } from "./types";
 import { aircraftData } from "./data/aircraft";
 import { airportData } from "./data/airports";
-
-// Get the acceleration rate (f/s^2) at a certain thrust (0-100)
-function getAccelerationRate(accData: LinearData, thrust: number) {
-    return KTS_TO_FPS * (accData.slope * (thrust * 0.01) + accData.base);
-}
+import { TRANSITION_THRUST_X, TRANSITION_THRUST_Y } from "./data/values";
 
 // Get the speed (kts) at a certain thrust level
-function getMaxSpeed(VmaxData: QuadraticData, thrust: number) {
-    return (
-        VmaxData.quadratic * (thrust * 0.01) * (thrust * 0.01) +
-        VmaxData.linear * (thrust * 0.01) +
-        VmaxData.base
-    );
+function getThrustSpeed(maxSpeed: number, thrust: number) {
+    const highRegimeSlope = (1 - TRANSITION_THRUST_Y) / (1 - TRANSITION_THRUST_X);
+
+    // high or low speed regime?
+    if (thrust > TRANSITION_THRUST_X) {
+        // high speed regime
+        const fraction = highRegimeSlope * thrust - highRegimeSlope + 1;
+        const speed = fraction * maxSpeed;
+        return speed;
+    } else {
+        // low speed regime
+        // quadratic joining at transition fraction
+        // y = ax^2 where a = transition_y / (transition_x^2)
+        const a = TRANSITION_THRUST_Y / (TRANSITION_THRUST_X * TRANSITION_THRUST_X);
+        const fraction = a * thrust * thrust;
+        return fraction * maxSpeed;
+    }
 }
 
-function getClosestThrust(Vmaxdata: QuadraticData, speed: number) {
+function getClosestThrust(maxSpeed: number, speed: number) {
     let minimumDifference = speed;
     let closestThrust = 0;
     for (let thrust = 1; thrust < 100; thrust++) {
-        const maxSpeed = getMaxSpeed(Vmaxdata, thrust);
-        const candidateDifference = Math.abs(maxSpeed - speed);
+        const thrustSpeed = getThrustSpeed(maxSpeed, thrust / 100);
+        const candidateDifference = Math.abs(thrustSpeed - speed);
         if (candidateDifference < minimumDifference) {
             minimumDifference = candidateDifference;
             closestThrust = thrust;
@@ -32,20 +38,20 @@ function getClosestThrust(Vmaxdata: QuadraticData, speed: number) {
 }
 
 // Get the thrust required to reach at least the speed (kts) provided
-function getMinimumThrust(VmaxData: QuadraticData, speed: number) {
+function getMinimumThrust(maxSpeed: number, speed: number) {
     for (let thrust = 1; thrust < 100; thrust++) {
-        if (getMaxSpeed(VmaxData, thrust) > speed) {
+        if (getThrustSpeed(maxSpeed, thrust / 100) > speed) {
             return thrust;
         }
     }
     return -1;
 }
 
-function getFlapReduction(aircraftData: AircraftData, setting: number) {
-    return (
-        aircraftData.flaps.find((flap) => flap.setting === setting)
-            ?.reduction || 0
-    );
+// Get flaps max speed given fraction extended
+function getFlapsMaxSpeed(maxSpeed: number, flap_fraction: number) {
+    const FLAP_SLOPE = 0.1167;
+    const fraction = 1 - FLAP_SLOPE * flap_fraction;
+    return fraction * maxSpeed;
 }
 
 function getAircraftData(typeCode: string) {
@@ -60,26 +66,12 @@ function getRunwayData(airport: AirportData, runway: string) {
     return airport.runways.find((rwy) => rwy.name === runway);
 }
 
-/**
- * Get deceleration rate in feet/second^2
- */
-function getDecelerationRate(aircraftData: AircraftData, id: string) {
-    const deceleration = aircraftData.deceleration;
-    const rate_kts =
-        (id === "idle-rev" && deceleration.idleReversers) ||
-        (id === "max-rev" && deceleration.maxReversers) ||
-        deceleration.noReversers;
-    return rate_kts * KTS_TO_FPS;
-}
-
 export {
-    getAccelerationRate,
-    getMaxSpeed,
+    getThrustSpeed,
     getClosestThrust,
     getMinimumThrust,
-    getFlapReduction,
+    getFlapsMaxSpeed,
     getAircraftData,
     getAirportData,
     getRunwayData,
-    getDecelerationRate,
 };
