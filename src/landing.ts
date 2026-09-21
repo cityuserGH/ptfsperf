@@ -74,9 +74,9 @@ function calculateLandingPerformance(
     const useReverseThrust = deceleration == "max-rev";
 
     const lda = rwyData.lda;
-    const flaps_fraction = (flaps || 0) / (acftData.flaps.length);
-    const Vstall = Math.ceil(acftData.speeds.stall - flaps_fraction * acftData.maxFlapReduction);
-    const maxSpeedWithFlaps = getFlapsMaxSpeed(acftData.speeds.max, flaps_fraction);
+    const flapsFraction = (acftData.numFlaps > 0) ? ((flaps || 0) / acftData.numFlaps) : 0;
+    const Vstall = Math.ceil(acftData.speeds.stall - flapsFraction * (acftData.maxFlapReduction || 0));
+    const maxSpeedWithFlaps = getFlapsMaxSpeed(acftData.speeds.max, flapsFraction);
     const acceleration = acftData.acceleration;
 
 

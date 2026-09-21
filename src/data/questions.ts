@@ -41,24 +41,16 @@ const questionBank = {
         optionCallback: ([type]: string[]) => {
             const acft = getAircraftData(type);
             if (!acft) return [];
-            const maxFlaps = Math.max(
-                ...acft.flaps.map((flap) => flap.setting)
-            ).toString();
-            const flaps = acft?.flaps
-                .sort((a, b) => (a.setting > b.setting ? 1 : -1))
-                .map((flaps) => {
-                    const name = flaps.name;
-                    const setting = flaps.setting.toString();
-                    const configuration = setting + "/" + maxFlaps;
-
-                    return {
-                        text: name
-                            ? name + " (" + configuration + ")"
-                            : "Flaps " + configuration,
-                        value: setting,
-                    };
-                });
-
+            const numFlaps = acft.numFlaps;
+            const flaps = [...Array(numFlaps).keys()].map(num => num + 1).map((setting) => {
+                const name = acft.customFlapNames?.find((x) => x.setting == setting);
+                const configString = `${setting}/${numFlaps}`;
+                const displayString = name ? `${name} (${configString})` : `Flaps ${configString}`;
+                return {
+                    text: displayString,
+                    value: setting.toString()
+                }
+            });
             return flaps;
         },
     },
@@ -133,10 +125,10 @@ const takeoffFormInfo: FormInformation = {
                           ]
                         : [
                               "Safe takeoff is not possible. Try a higher flap setting or a longer runway.",
-                              "???",
-                              "???",
-                              "???",
-                              "???",
+                              (v1 == -1 ? "???" : v1),
+                              vr,
+                              v2,
+                              thrust,
                               asdist,
                               asda,
                               stopMargin,

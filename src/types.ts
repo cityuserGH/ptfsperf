@@ -1,12 +1,13 @@
 type AircraftData = {
     type: string;
-    flaps: { name?: string; setting: number }[];
+    numFlaps: number;
+    customFlapNames?: { name: string; setting: number }[];
     speeds: {
         max: number;
         transition: number;
         stall: number;
     };
-    maxFlapReduction: number;
+    maxFlapReduction?: number;
     acceleration: number;
     hasReversers: boolean;
 };
