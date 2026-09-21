@@ -8,6 +8,8 @@ const LDGDIST_SAFETY_MARGIN = 1.15;
 const VREF_FACTOR = 1.3; // Vref = factor * Vstall
 const FULL_THRUST_TIME = 3.3; // time to change thrust 0-100 or 100-0
 const VMCG_VR_FACTOR = 0.65; // Vmcg = factor * Vr; the minimum value of V1
+const VMCG_THRUST_VARIANCE = 10; // Vmcg variance depending on thrust, comparing 0-100 (usually thrust >50)
+const PITCH_UP_DEGREES = 15; // degrees pitch-up during takeoff
 
 // simulation
 const DELTA_T = 0.01; // fidelity, seconds
@@ -16,9 +18,9 @@ const LOW_REGIME_THRESHOLD = 40;
 const HIGH_REGIME_THRESHOLD = 80;
 const THRUST_SPEED_ACCELERATION = 1.5;
 
-// max speed at thrust
-const TRANSITION_THRUST_FRACTION = 0.55 // is this variable?
-const HIGH_SPEED_REGIME_SLOPE = 1.47175
+// transition from quadratic to linear for max speed at thrust
+const TRANSITION_THRUST_X = 2/3;
+const TRANSITION_THRUST_Y = 1/2;
 
 export {
     KTS_TO_FPS,
@@ -31,11 +33,13 @@ export {
     VREF_FACTOR,
     FULL_THRUST_TIME,
     VMCG_VR_FACTOR,
+    VMCG_THRUST_VARIANCE,
+    PITCH_UP_DEGREES,
     DELTA_T,
     APPROACHING_THROTTLE_SPEED_FRACTION,
     LOW_REGIME_THRESHOLD,
     HIGH_REGIME_THRESHOLD,
     THRUST_SPEED_ACCELERATION,
-    TRANSITION_THRUST_FRACTION,
-    HIGH_SPEED_REGIME_SLOPE
+    TRANSITION_THRUST_X,
+    TRANSITION_THRUST_Y,
 };

@@ -1,23 +1,23 @@
 import { AirportData } from "./types";
 import { aircraftData } from "./data/aircraft";
 import { airportData } from "./data/airports";
-import { TRANSITION_THRUST_FRACTION, HIGH_SPEED_REGIME_SLOPE } from "./data/values";
+import { TRANSITION_THRUST_X, TRANSITION_THRUST_Y } from "./data/values";
 
 // Get the speed (kts) at a certain thrust level
 function getThrustSpeed(maxSpeed: number, thrust: number) {
+    const highRegimeSlope = (1 - TRANSITION_THRUST_Y) / (1 - TRANSITION_THRUST_X);
 
     // high or low speed regime?
-    if (thrust > TRANSITION_THRUST_FRACTION) {
+    if (thrust > TRANSITION_THRUST_X) {
         // high speed regime
-        const fraction = HIGH_SPEED_REGIME_SLOPE * thrust - HIGH_SPEED_REGIME_SLOPE + 1;
+        const fraction = highRegimeSlope * thrust - highRegimeSlope + 1;
         const speed = fraction * maxSpeed;
         return speed;
     } else {
         // low speed regime
         // quadratic joining at transition fraction
-        // y = ax^2 where a = transition_y / transition_x^2
-        const fraction_at_transition = HIGH_SPEED_REGIME_SLOPE * TRANSITION_THRUST_FRACTION - HIGH_SPEED_REGIME_SLOPE + 1;
-        const a = fraction_at_transition / HIGH_SPEED_REGIME_SLOPE * HIGH_SPEED_REGIME_SLOPE;
+        // y = ax^2 where a = transition_y / (transition_x^2)
+        const a = TRANSITION_THRUST_Y / (TRANSITION_THRUST_X * TRANSITION_THRUST_X);
         const fraction = a * thrust * thrust;
         return fraction * maxSpeed;
     }
