@@ -10,7 +10,9 @@ import {
     APPROACHING_THROTTLE_SPEED_FRACTION,
     LOW_REGIME_THRESHOLD,
     HIGH_REGIME_THRESHOLD,
-    THRUST_SPEED_ACCELERATION
+    THRUST_SPEED_ACCELERATION,
+    VMCG_THRUST_VARIANCE,
+    PITCH_UP_DEGREES
 } from "./data/values";
 
 import {
@@ -29,7 +31,7 @@ function calculateV1(
     maxAcceleration: number,
     asda: number // accelerate stop distance available
 ) {
-    const minimumV1_kts = Math.ceil(VR_kts * VMCG_VR_FACTOR);
+    const minimumV1_kts = Math.ceil(VR_kts * VMCG_VR_FACTOR) - (1 - thrust) * VMCG_THRUST_VARIANCE;
 
     let V1_kts = VR_kts;
     let totalDistanceToStop = 0;
@@ -237,7 +239,7 @@ function calculateTakeoffPerformanceData(
     tora: number,
     flapsFraction: number
 ) {
-    const V_R = Math.ceil(aircraftData.speeds.transition + 1 - flapsFraction * aircraftData.maxFlapReduction);
+    const V_R = Math.ceil(aircraftData.speeds.transition + 1 - flapsFraction * (aircraftData.maxFlapReduction || 0));
     const V_2 = V_R + 4;
 
     const climboutSpeed = V_2;
@@ -246,7 +248,11 @@ function calculateTakeoffPerformanceData(
     const maxSpeed = getFlapsMaxSpeed(aircraftData.speeds.max, flapsFraction);
     const maxAcceleration = aircraftData.acceleration; // does not depend on flaps
 
-    const minimumThrust = getMinimumThrust(maxSpeed, climboutSpeed);
+    const pitchUpFraction = PITCH_UP_DEGREES / 90;
+    const pitchUpMaxSpeed = maxSpeed * (pitchUpFraction * pitchUpFraction - 2 * pitchUpFraction + 1)
+
+    const minimumThrust = getMinimumThrust(pitchUpMaxSpeed, climboutSpeed);
+    console.log("Minimum thrust for", climboutSpeed, "given pitch-up max speed", pitchUpMaxSpeed, "is", minimumThrust, "%");
 
     let V_1 = -1;
     let canAccStop = false;
@@ -314,7 +320,7 @@ function calculateTakeoffPerformance(
         return;
     }
 
-    const flapsFraction = (flaps || 0) / (acftData.flaps.length);
+    const flapsFraction = (acftData.numFlaps > 0) ? ((flaps || 0) / acftData.numFlaps) : 0;
 
     const performance = calculateTakeoffPerformanceData(
         acftData,
