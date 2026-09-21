@@ -47,8 +47,8 @@ function calculateV1(
 
         totalDistanceToStop = Math.ceil(
             accelerateDistance +
-                decelerateDistance + 
-                safetyMarginDistance
+            decelerateDistance +
+            safetyMarginDistance
         );
 
         if (totalDistanceToStop < asda) {
@@ -216,7 +216,7 @@ function calculateDecelerateDistance(
         const reverseTime = FULL_THRUST_TIME;
         const reverseDeltas = reverseTime / dt;
         for (let i = 0; i < reverseDeltas; i++) {
-            const reverseSoFar =  i / reverseDeltas;
+            const reverseSoFar = i / reverseDeltas;
             const newSpeed = calculateNewSpeed(0, maxSpeed, maxAcceleration, currentSpeed, dt, reverseSoFar);
             distance += dt * (currentSpeed + newSpeed) / 2;
             currentSpeed = newSpeed;

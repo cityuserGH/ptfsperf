@@ -19,8 +19,8 @@ const HIGH_REGIME_THRESHOLD = 80;
 const THRUST_SPEED_ACCELERATION = 1.5;
 
 // transition from quadratic to linear for max speed at thrust
-const TRANSITION_THRUST_X = 2/3;
-const TRANSITION_THRUST_Y = 1/2;
+const TRANSITION_THRUST_X = 2 / 3;
+const TRANSITION_THRUST_Y = 1 / 2;
 
 export {
     KTS_TO_FPS,

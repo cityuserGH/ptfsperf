@@ -110,33 +110,33 @@ const takeoffFormInfo: FormInformation = {
                 const texts = (
                     takeoffPossible
                         ? [
-                              "Takeoff is possible.",
-                              v1,
-                              vr,
-                              v2,
-                              thrust,
-                              asdist,
-                              asda,
-                              stopMargin,
-                              atod,
-                              torun,
-                              tora,
-                              liftoffMargin,
-                          ]
+                            "Takeoff is possible.",
+                            v1,
+                            vr,
+                            v2,
+                            thrust,
+                            asdist,
+                            asda,
+                            stopMargin,
+                            atod,
+                            torun,
+                            tora,
+                            liftoffMargin,
+                        ]
                         : [
-                              "Safe takeoff is not possible. Try a higher flap setting or a longer runway.",
-                              (v1 == -1 ? "???" : v1),
-                              vr,
-                              v2,
-                              thrust,
-                              asdist,
-                              asda,
-                              stopMargin,
-                              atod,
-                              torun,
-                              tora,
-                              liftoffMargin,
-                          ]
+                            "Safe takeoff is not possible. Try a higher flap setting or a longer runway.",
+                            (v1 == -1 ? "???" : v1),
+                            vr,
+                            v2,
+                            thrust,
+                            asdist,
+                            asda,
+                            stopMargin,
+                            atod,
+                            torun,
+                            tora,
+                            liftoffMargin,
+                        ]
                 ).map((text) => text.toString());
 
                 spanIds
