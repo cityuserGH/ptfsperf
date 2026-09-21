@@ -202,15 +202,15 @@ const airportData: AirportData[] = [
                 intersections: [
                     {
                         name: "B",
-                        shift: 0,
+                        shift: 295,
                     },
                     {
                         name: "C",
-                        shift: 1603,
+                        shift: 1899,
                     },
                     {
                         name: "RWY 11/29",
-                        shift: 3362,
+                        shift: 3657,
                     }
                 ],
             },
