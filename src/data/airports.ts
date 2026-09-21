@@ -381,46 +381,6 @@ const airportData: AirportData[] = [
         ],
     },
     {
-        name: "Grindavik",
-        icao: "IGRV",
-        runways: [
-            {
-                name: "06",
-                heading: 62,
-                lda: 4061,
-                tora: 4061,
-                asda: 4182,
-                intersections: [
-                    {
-                        name: "A1",
-                        shift: 0,
-                    },
-                    {
-                        name: "A2/B2",
-                        shift: 1424,
-                    },
-                ],
-            },
-            {
-                name: "24",
-                heading: 242,
-                lda: 4061,
-                tora: 4061,
-                asda: 4172,
-                intersections: [
-                    {
-                        name: "A3",
-                        shift: 0,
-                    },
-                    {
-                        name: "A2/B2",
-                        shift: 2637,
-                    },
-                ],
-            },
-        ],
-    },
-    {
         name: "Sauthemptona",
         icao: "ISAU",
         runways: [
