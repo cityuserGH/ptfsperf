@@ -3,12 +3,13 @@ import {
     FLARE_DURATION,
     LDGDIST_SAFETY_MARGIN,
     VREF_FACTOR,
+    STALL_TRANSITION_FACTOR,
 } from "./data/values";
 import {
     getAircraftData,
     getAirportData,
     getClosestThrust,
-    getFlapsMaxSpeed,
+    getFlapsReduction,
     getMinimumThrust,
     getRunwayData,
 } from "./utils";
@@ -16,25 +17,30 @@ import {
     calculateDecelerateDistance
 } from "./takeoff";
 
-function calculateLandingDistance(Vref: number, maxSpeed: number, maxAcceleration: number, useReverseThrust: boolean) {
+function calculateLandingDistance(maxSpeed: number, tSpeed: number, maxAcceleration: number, flaps: number, Vref: number, useReverseThrust: boolean) {
     const flareDistance = Vref * FLARE_DURATION * KTS_TO_FPS;
-    const Vref_thrust = getMinimumThrust(maxSpeed, Vref) / 100;
-    const rolloutDistance = calculateDecelerateDistance(Vref, Vref_thrust, maxSpeed, maxAcceleration, useReverseThrust);
+    const Vref_thrust = getMinimumThrust(maxSpeed, tSpeed, flaps, Vref) / 100;
+    const rolloutDistance = calculateDecelerateDistance(maxSpeed, tSpeed, maxAcceleration, flaps, Vref_thrust, Vref, useReverseThrust);
     const actualLength = flareDistance + rolloutDistance;
     return Math.ceil(actualLength);
 }
 
 // v_ref = 1.3 stall speed in configuration
 function calculateLandingPerformanceData(
-    lda: number,
-    stallSpeed: number,
     maxSpeed: number,
+    tSpeed: number,
     maxAcceleration: number,
+    flaps: number,
+    lda: number,
     useReverseThrust: boolean,
 ) {
-    const Vref = Math.ceil(stallSpeed * VREF_FACTOR);
+    // calculate stall speed
+    const Vstall_noflaps = STALL_TRANSITION_FACTOR * tSpeed;
+    const Vstall = Vstall_noflaps - getFlapsReduction(maxSpeed, tSpeed, flaps, Vstall_noflaps);
+
+    const Vref = Math.floor(Vstall * VREF_FACTOR);
     const Vapp = Vref + 5;
-    const actualLength = calculateLandingDistance(Vref, maxSpeed, maxAcceleration, useReverseThrust);
+    const actualLength = calculateLandingDistance(maxSpeed, tSpeed, maxAcceleration, flaps, Vref, useReverseThrust);
     const ald = Math.ceil(actualLength);
     const ldr = Math.ceil(actualLength * LDGDIST_SAFETY_MARGIN);
     const margin = lda - ldr;
@@ -54,7 +60,7 @@ function calculateLandingPerformance(
     type: string,
     airport: string,
     runway: string,
-    flaps: number,
+    flapsSetting: number,
     deceleration: string
 ) {
     const aptData = getAirportData(airport);
@@ -71,27 +77,30 @@ function calculateLandingPerformance(
         return;
     }
 
+    const flaps = (acftData.numFlaps > 0) ? ((flapsSetting || 0) / acftData.numFlaps) : 0;
     const useReverseThrust = deceleration == "max-rev";
 
     const lda = rwyData.lda;
-    const flapsFraction = (acftData.numFlaps > 0) ? ((flaps || 0) / acftData.numFlaps) : 0;
-    const Vstall = Math.ceil(acftData.speeds.stall - flapsFraction * (acftData.maxFlapReduction || 0));
-    const maxSpeedWithFlaps = getFlapsMaxSpeed(acftData.speeds.max, flapsFraction);
+    const maxSpeed = acftData.speeds.max;
+    const tSpeed = acftData.speeds.transition;
     const acceleration = acftData.acceleration;
 
-
     const performance = calculateLandingPerformanceData(
-        lda,
-        Vstall,
-        maxSpeedWithFlaps,
+        maxSpeed,
+        tSpeed,
         acceleration,
-        useReverseThrust,
+        flaps,
+        lda,
+        useReverseThrust
     );
+    console.log("vapp:", performance.Vapp);
     const VappThrust = getClosestThrust(
-        maxSpeedWithFlaps,
+        maxSpeed,
+        tSpeed,
+        flaps,
         performance.Vapp
     );
-
+    console.log(VappThrust);
     return {
         ...performance,
         thrust: VappThrust,

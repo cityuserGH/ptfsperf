@@ -13,9 +13,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 470,
             transition: 160,
-            stall: 136
         },
-        maxFlapReduction: 27,
         acceleration: 10,
         hasReversers: true,
     },
@@ -25,9 +23,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 447,
             transition: 167,
-            stall: 141
         },
-        maxFlapReduction: 28,
         acceleration: 10,
         hasReversers: true,
     },
@@ -37,9 +33,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 475,
             transition: 170,
-            stall: 144,
         },
-        maxFlapReduction: 29,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -49,9 +43,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 487,
             transition: 175,
-            stall: 148,
         },
-        maxFlapReduction: 30,
         acceleration: 10,
         hasReversers: true,
     },
@@ -61,9 +53,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 454,
             transition: 165,
-            stall: 140,
         },
-        maxFlapReduction: 28,
         acceleration: 10,
         hasReversers: true,
     },
@@ -73,9 +63,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 458,
             transition: 165,
-            stall: 140,
         },
-        maxFlapReduction: 28,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -85,9 +73,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 458,
             transition: 165,
-            stall: 140,
         },
-        maxFlapReduction: 28,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -97,9 +83,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 518,
             transition: 180,
-            stall: 153,
         },
-        maxFlapReduction: 31,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -109,9 +93,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 487,
             transition: 175,
-            stall: 148,
         },
-        maxFlapReduction: 30,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -121,9 +103,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 447,
             transition: 155,
-            stall: 131,
         },
-        maxFlapReduction: 26,
         acceleration: 10,
         hasReversers: true,
     },
@@ -133,9 +113,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 470,
             transition: 161,
-            stall: 136,
         },
-        maxFlapReduction: 27,
         acceleration: 10,
         hasReversers: true,
     },
@@ -145,9 +123,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 470,
             transition: 175,
-            stall: 148,
         },
-        maxFlapReduction: 30,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -157,9 +133,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 566,
             transition: 175,
-            stall: 148,
         },
-        maxFlapReduction: 30,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -169,9 +143,7 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 495,
             transition: 175,
-            stall: 148,
         },
-        maxFlapReduction: 30,
         acceleration: 9.5,
         hasReversers: true,
     },
@@ -181,7 +153,6 @@ const aircraftData: AircraftData[] = [
         speeds: {
             max: 1165,
             transition: 190,
-            stall: 160,
         },
         acceleration: 12,
         hasReversers: true,
