@@ -43,7 +43,7 @@ const questionBank = {
             if (!acft) return [];
             const numFlaps = acft.numFlaps;
             const flaps = [...Array(numFlaps).keys()].map(num => num + 1).map((setting) => {
-                const name = acft.customFlapNames?.find((x) => x.setting == setting);
+                const name = acft.customFlapNames?.find((x) => x.setting == setting)?.name;
                 const configString = `${setting}/${numFlaps}`;
                 const displayString = name ? `${name} (${configString})` : `Flaps ${configString}`;
                 return {
