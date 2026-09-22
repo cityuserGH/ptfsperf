@@ -5,9 +5,7 @@ type AircraftData = {
     speeds: {
         max: number;
         transition: number;
-        stall: number;
     };
-    maxFlapReduction?: number;
     acceleration: number;
     hasReversers: boolean;
 };

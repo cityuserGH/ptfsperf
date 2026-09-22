@@ -10,6 +10,7 @@ const FULL_THRUST_TIME = 3.3; // time to change thrust 0-100 or 100-0
 const VMCG_VR_FACTOR = 0.65; // Vmcg = factor * Vr; the minimum value of V1
 const VMCG_THRUST_VARIANCE = 10; // Vmcg variance depending on thrust, comparing 0-100 (usually thrust >50)
 const PITCH_UP_DEGREES = 15; // degrees pitch-up during takeoff
+const STALL_TRANSITION_FACTOR = 0.8275;
 
 // simulation
 const DELTA_T = 0.01; // fidelity, seconds
@@ -42,4 +43,5 @@ export {
     THRUST_SPEED_ACCELERATION,
     TRANSITION_THRUST_X,
     TRANSITION_THRUST_Y,
+    STALL_TRANSITION_FACTOR,
 };
