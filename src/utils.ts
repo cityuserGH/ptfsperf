@@ -49,11 +49,14 @@ function getThrustSpeed(maxSpeed: number, tSpeed: number, flaps: number, thrust:
     return speed;
 }
 
+// Closest % for display purposes
+// Note that values X.0 -> X.99 are displayed as "X" in-game
+// Therefore, we calculate X as X.5 but display X
 function getClosestThrust(maxSpeed: number, tSpeed: number, flaps: number, speed: number) {
     let minimumDifference = speed;
     let closestThrust = 0;
     for (let thrust = 1; thrust < 100; thrust++) {
-        const thrustSpeed = getThrustSpeed(maxSpeed, tSpeed, flaps, thrust / 100);
+        const thrustSpeed = getThrustSpeed(maxSpeed, tSpeed, flaps, (thrust + 0.5) / 100);
         const candidateDifference = Math.abs(thrustSpeed - speed);
         if (candidateDifference < minimumDifference) {
             minimumDifference = candidateDifference;
