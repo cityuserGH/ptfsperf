@@ -72,7 +72,7 @@ function calculateNewSpeed(
     thrust: number,
     speed: number,
     dt: number,
-    reverseThrust: number = 0,
+    reverseThrust?: number,
 ) {
     const thrustSpeed = getThrustSpeed(maxSpeed, tSpeed, flaps, thrust);
 
@@ -109,10 +109,13 @@ function calculateNewSpeed(
 
         const LOW_BRAKING_THRESHOLD = 80;
         const IDLE_THRUST_BRAKING = -7;
+        const IDLE_REVERSE_BRAKING = -7;
         const FULL_REVERSE_BRAKING = -9;
 
-        if (reverseThrust > 0) {
-            acceleration = reverseThrust * FULL_REVERSE_BRAKING;
+        if (reverseThrust) {
+            // not suitable if you only use idle reverse
+            // reason: idle reverse deceleration decreases closer to 0 kts
+            acceleration = IDLE_REVERSE_BRAKING + reverseThrust * reverseThrust * (FULL_REVERSE_BRAKING - IDLE_REVERSE_BRAKING);
         } else {
             // acceleration decreases from around 80 kts to 0 kts
             // assuming thrust is 0... what if it isn't?
