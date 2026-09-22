@@ -73,13 +73,6 @@ function getMinimumThrust(maxSpeed: number, tSpeed: number, flaps: number, speed
     return -1;
 }
 
-// Get flaps max speed given fraction extended
-//function getFlapsMaxSpeed(maxSpeed: number, flap_fraction: number) {
-//    const FLAP_SLOPE = 0.1167;
-//    const fraction = 1 - FLAP_SLOPE * flap_fraction;
-//    return fraction * maxSpeed;
-//}
-
 function getAircraftData(typeCode: string) {
     return aircraftData.find((acft) => acft.type === typeCode);
 }
