@@ -54,6 +54,24 @@ const questionBank = {
             return flaps;
         },
     },
+    wind_speed: {
+        question: "Wind Speed (kt)",
+        required: false,
+        default: "0",
+        type: "number",
+        min: 0,
+        max: 30,
+        step: 1,
+    },
+    wind_heading: {
+        question: "Wind Direction (° to)",
+        required: false,
+        default: "0",
+        type: "number",
+        min: 0,
+        max: 359,
+        step: 1,
+    },
 };
 
 const takeoffFormInfo: FormInformation = {
@@ -79,15 +97,28 @@ const takeoffFormInfo: FormInformation = {
             spans[id] = span;
         });
 
-        const [type, airport, runway, intersection, flaps] =
-            Object.values(options);
+        const [
+            type,
+            airport,
+            runway,
+            intersection,
+            flaps,
+            windSpeedInput,
+            windDirectionInput,
+        ] = Object.values(options);
+        const windSpeedKts = Math.max(0, Number.parseFloat(windSpeedInput) || 0);
+        const rawWindDirection = Number.parseFloat(windDirectionInput) || 0;
+        const windDirectionDeg = ((rawWindDirection % 360) + 360) % 360;
+
         if (type && airport && runway) {
             const results = calculateTakeoffPerformance(
                 type,
                 airport,
                 runway,
                 intersection,
-                parseInt(flaps)
+                Number.parseInt(flaps, 10) || 0,
+                windSpeedKts,
+                windDirectionDeg
             );
             if (results) {
                 const {
@@ -219,6 +250,8 @@ const takeoffFormInfo: FormInformation = {
             },
         },
         { ...questionBank.flaps, dependsOn: [0] },
+        questionBank.wind_speed,
+        questionBank.wind_heading,
     ].map((element, index) => {
         return { ...element, id: index };
     }),
@@ -243,15 +276,28 @@ const landingFormInfo: FormInformation = {
             spans[id] = span;
         });
 
-        const [type, airport, runway, flaps, reversers] =
-            Object.values(options);
+        const [
+            type,
+            airport,
+            runway,
+            flaps,
+            reversers,
+            windSpeedInput,
+            windDirectionInput,
+        ] = Object.values(options);
+        const windSpeedKts = Math.max(0, Number.parseFloat(windSpeedInput) || 0);
+        const rawWindDirection = Number.parseFloat(windDirectionInput) || 0;
+        const windDirectionDeg = ((rawWindDirection % 360) + 360) % 360;
+
         if (type && airport && runway) {
             const results = calculateLandingPerformance(
                 type,
                 airport,
                 runway,
-                parseInt(flaps),
-                reversers
+                Number.parseInt(flaps, 10) || 0,
+                reversers,
+                windSpeedKts,
+                windDirectionDeg
             );
             if (results) {
                 const { thrust, canStop, ald, lda, ldr, margin, Vref, Vapp } =
@@ -325,7 +371,7 @@ const landingFormInfo: FormInformation = {
             dependsOn: [0],
             optionCallback: ([type]: string[]) => {
                 const acft = getAircraftData(type);
-                let decels = [];
+                const decels: { text: string; value: string }[] = [];
                 if (acft?.hasReversers) {
                     decels.push({
                         text: "Max reverse thrust",
@@ -335,6 +381,8 @@ const landingFormInfo: FormInformation = {
                 return decels;
             },
         },
+        questionBank.wind_speed,
+        questionBank.wind_heading,
     ].map((element, index) => {
         return { ...element, id: index };
     }),

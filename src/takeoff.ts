@@ -22,7 +22,25 @@ import {
     getMinimumThrust,
     getRunwayData,
     getThrustSpeed,
+    getWindComponents,
 } from "./utils";
+
+// The simulation stores the aircraft's reference speed in knots. Wind changes
+// the longitudinal ground speed used to integrate runway distance.
+function getGroundSpeed(speedKts: number, headwindKts: number) {
+    return Math.max(0, speedKts - headwindKts);
+}
+
+function addGroundDistance(
+    currentSpeedKts: number,
+    newSpeedKts: number,
+    dt: number,
+    headwindKts: number,
+) {
+    const currentGroundSpeed = getGroundSpeed(currentSpeedKts, headwindKts);
+    const newGroundSpeed = getGroundSpeed(newSpeedKts, headwindKts);
+    return dt * (currentGroundSpeed + newGroundSpeed) / 2;
+}
 
 function calculateV1(
     maxSpeed: number,
@@ -31,7 +49,8 @@ function calculateV1(
     flaps: number,
     VR_kts: number,
     thrust: number,
-    asda: number // accelerate stop distance available
+    asda: number, // accelerate stop distance available
+    headwindKts = 0,
 ) {
     const minimumV1_kts = Math.ceil(VR_kts * VMCG_VR_FACTOR) - (1 - thrust) * VMCG_THRUST_VARIANCE;
 
@@ -39,13 +58,13 @@ function calculateV1(
     let totalDistanceToStop = 0;
     while (V1_kts >= minimumV1_kts) {
         // distance to accelerate to V1 speed
-        const accelerateDistance = calculateAccelerateDistance(maxSpeed, tSpeed, maxAcceleration, flaps, thrust, V1_kts, false);
+        const accelerateDistance = calculateAccelerateDistance(maxSpeed, tSpeed, maxAcceleration, flaps, thrust, V1_kts, false, headwindKts);
 
         // we are at V1, retard and stop (decelerate)
-        const decelerateDistance = calculateDecelerateDistance(maxSpeed, tSpeed, maxAcceleration, flaps, thrust, V1_kts, false);
+        const decelerateDistance = calculateDecelerateDistance(maxSpeed, tSpeed, maxAcceleration, flaps, thrust, V1_kts, false, headwindKts);
 
         // safety margin, 2 seconds at V1, arbitrary but by-the-book
-        const safetyMarginDistance = 2 * V1_kts * KTS_TO_FPS;
+        const safetyMarginDistance = 2 * getGroundSpeed(V1_kts, headwindKts) * KTS_TO_FPS;
 
         totalDistanceToStop = Math.ceil(
             accelerateDistance +
@@ -157,8 +176,11 @@ function calculateAccelerateDistance(
     thrust: number,
     targetSpeed: number,
     includeLiftoff: boolean,
+    headwindKts = 0,
 ) {
-    // estimate with trapizodial rule
+    // Estimate using the trapezoidal rule. The speed trajectory remains the
+    // calculator's existing aircraft-performance approximation; wind is applied
+    // to the ground-speed integration only.
 
     // reachable at all?
     if (targetSpeed > getThrustSpeed(maxSpeed, tSpeed, flaps, thrust)) {
@@ -174,14 +196,14 @@ function calculateAccelerateDistance(
     for (let i = 0; i < powerUpDeltas; i++) {
         const thrustSoFar = thrust * i / powerUpDeltas;
         const newSpeed = calculateNewSpeed(maxSpeed, tSpeed, maxAcceleration, flaps, thrustSoFar, currentSpeed, dt);
-        distance += dt * (currentSpeed + newSpeed) / 2; // average of prior and later
+        distance += addGroundDistance(currentSpeed, newSpeed, dt, headwindKts); // average ground speed
         currentSpeed = newSpeed;
     }
 
     // continue until rotation speed
     while (currentSpeed < targetSpeed) {
         const newSpeed = calculateNewSpeed(maxSpeed, tSpeed, maxAcceleration, flaps, thrust, currentSpeed, dt);
-        distance += dt * (currentSpeed + newSpeed) / 2;
+        distance += addGroundDistance(currentSpeed, newSpeed, dt, headwindKts);
         currentSpeed = newSpeed;
     }
 
@@ -191,7 +213,7 @@ function calculateAccelerateDistance(
         const rotationDeltas = rotationTime / dt;
         for (let i = 0; i < rotationDeltas; i++) {
             const newSpeed = calculateNewSpeed(maxSpeed, tSpeed, maxAcceleration, flaps, thrust, currentSpeed, dt);
-            distance += dt * (currentSpeed + newSpeed) / 2;
+            distance += addGroundDistance(currentSpeed, newSpeed, dt, headwindKts);
             currentSpeed = newSpeed;
         }
     }
@@ -207,6 +229,7 @@ function calculateDecelerateDistance(
     initialThrust: number,
     startSpeed: number,
     useReverseThrust: boolean,
+    headwindKts = 0,
 ) {
 
     const dt = DELTA_T;
@@ -218,7 +241,7 @@ function calculateDecelerateDistance(
     for (let i = 0; i < retardDeltas; i++) {
         const thrustSoFar = initialThrust * (1 - i / retardDeltas);
         const newSpeed = calculateNewSpeed(maxSpeed, tSpeed, maxAcceleration, flaps, thrustSoFar, currentSpeed, dt);
-        distance += dt * (currentSpeed + newSpeed) / 2;
+        distance += addGroundDistance(currentSpeed, newSpeed, dt, headwindKts);
         currentSpeed = newSpeed;
     }
 
@@ -229,7 +252,7 @@ function calculateDecelerateDistance(
         for (let i = 0; i < reverseDeltas; i++) {
             const reverseSoFar = i / reverseDeltas;
             const newSpeed = calculateNewSpeed(maxSpeed, tSpeed, maxAcceleration, flaps, 0, currentSpeed, dt, reverseSoFar);
-            distance += dt * (currentSpeed + newSpeed) / 2;
+            distance += addGroundDistance(currentSpeed, newSpeed, dt, headwindKts);
             currentSpeed = newSpeed;
         }
     }
@@ -237,7 +260,7 @@ function calculateDecelerateDistance(
     const reverseThrust = useReverseThrust ? 1 : 0;
     while (currentSpeed > 0.5) {
         const newSpeed = calculateNewSpeed(maxSpeed, tSpeed, maxAcceleration, flaps, 0, currentSpeed, dt, reverseThrust);
-        distance += dt * (currentSpeed + newSpeed) / 2;
+        distance += addGroundDistance(currentSpeed, newSpeed, dt, headwindKts);
         currentSpeed = newSpeed;
     }
 
@@ -248,7 +271,8 @@ function calculateTakeoffPerformanceData(
     aircraftData: AircraftData,
     asda: number,
     tora: number,
-    flaps: number
+    flaps: number,
+    headwindKts = 0,
 ) {
 
 
@@ -282,7 +306,7 @@ function calculateTakeoffPerformanceData(
     while (thrust < 100 && (!canAccStop || !canLiftoff)) {
         thrust++;
 
-        liftoffDistance = Math.ceil(calculateAccelerateDistance(maxSpeed, tSpeed, maxAcceleration, flaps, thrust / 100, V_R, true));
+        liftoffDistance = Math.ceil(calculateAccelerateDistance(maxSpeed, tSpeed, maxAcceleration, flaps, thrust / 100, V_R, true, headwindKts));
         takeoffRun = Math.ceil(liftoffDistance * TORA_SAFETY_MARGIN);
         canLiftoff = tora > takeoffRun;
 
@@ -295,7 +319,8 @@ function calculateTakeoffPerformanceData(
             flaps,
             V_R,
             thrust / 100,
-            asda
+            asda,
+            headwindKts,
         ));
         canAccStop = !(V_1 === -1);
     }
@@ -318,7 +343,9 @@ function calculateTakeoffPerformance(
     airport: string,
     runway: string,
     intersection: string,
-    flapsSetting: number
+    flapsSetting: number,
+    windSpeedKts = 0,
+    windDirectionDeg = 0,
 ) {
     const aptData = getAirportData(airport);
     if (!aptData) {
@@ -331,6 +358,12 @@ function calculateTakeoffPerformance(
     const takeoffShift =
         rwyData.intersections.find((hold) => hold.name === intersection)
             ?.shift || 0;
+
+    const wind = getWindComponents(
+        Math.max(0, Number.isFinite(windSpeedKts) ? windSpeedKts : 0),
+        Number.isFinite(windDirectionDeg) ? windDirectionDeg : 0,
+        rwyData.heading,
+    );
 
     const asda = rwyData.asda - takeoffShift;
     const tora = rwyData.tora - takeoffShift;
@@ -346,9 +379,10 @@ function calculateTakeoffPerformance(
         acftData,
         asda,
         tora,
-        flaps
+        flaps,
+        -wind.headwind,
     );
-    return { ...performance, asda, tora };
+    return { ...performance, asda, tora, wind };
 }
 
 export { calculateTakeoffPerformance, calculateDecelerateDistance };

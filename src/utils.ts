@@ -1,4 +1,4 @@
-import { AirportData } from "./types";
+import { AirportData, WindComponents } from "./types";
 import { aircraftData } from "./data/aircraft";
 import { airportData } from "./data/airports";
 import { TRANSITION_THRUST_X, TRANSITION_THRUST_Y } from "./data/values";
@@ -88,6 +88,22 @@ function getRunwayData(airport: AirportData, runway: string) {
     return airport.runways.find((rwy) => rwy.name === runway);
 }
 
+function getWindComponents(
+    windSpeedKts: number,
+    windDirectionDeg: number,
+    runwayHeadingDeg: number
+): WindComponents {
+    const deltaDeg =
+        ((windDirectionDeg - runwayHeadingDeg + 540) % 360) - 180;
+
+    const deltaRad = deltaDeg * Math.PI / 180;
+
+    return {
+        headwind: -windSpeedKts * Math.cos(deltaRad),
+        crosswind: windSpeedKts * Math.sin(deltaRad),
+    };
+}
+
 export {
     getThrustSpeed,
     getClosestThrust,
@@ -96,4 +112,5 @@ export {
     getAircraftData,
     getAirportData,
     getRunwayData,
+    getWindComponents,
 };
